@@ -1,5 +1,9 @@
 'use strict';
 
+if (typeof(WebUtil)=="undefined"){
+  WebUtil = {};
+}
+
 WebUtil.HTML_Util=(function(){
 
   function _is_unsafe_anchor(anchor_element){

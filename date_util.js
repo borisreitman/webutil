@@ -1,5 +1,9 @@
 'use strict';
 
+if (typeof(WebUtil)=="undefined"){
+  WebUtil = {};
+}
+
 SUBROSA.Date_Util=(function(){
 
   var month_name_en = [ 'Jan','Feb','March', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
