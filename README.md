@@ -3,7 +3,7 @@ Web Development utilities
 
 Contains various groupings of functions to achieve common tasks in web development.
 
-## UrlUtil
+## URL_Util
 
 Allows to manipulate query parameters of a URL. Parameters are called *options*.
 
@@ -48,3 +48,32 @@ Sets an URL parameter on a URL.
 ### is_url(str)
 
 Checks if `str` looks like a URL.
+
+## HTML_Util
+
+Helper functions to work with current page loaded in the browser.
+
+## linkify(root_element)
+
+Will find all URLs in HTML and turn them into links. Use this in order to avoid
+generating links on the server side. Doing it on client side prevents Cross Site
+Scripting attacks.
+
+```
+  <div id="$foo">
+    Go to https://example.com
+  </div>
+  <script>
+    var { HTML_Util } = WebUtil;
+    HTML_Util.linkify($foo);
+  </script>
+```
+
+### get_meta(name):
+  
+Get meta tag of a certain name. Returns the value of the `content` attribute of
+the meta tag.
+
+### encode_html_entities(html)
+
+Replaces unsafe HTML characters with their safer equivalents.
