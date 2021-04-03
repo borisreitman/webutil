@@ -6,7 +6,7 @@ if (typeof(WebUtil)=="undefined"){
 
 WebUtil.URL_Util=(function(){
 
-  function stringify_url_options(options){
+  function encode_url_options(options){
     var list = []
     for (var k in options){
       var v = options[k];
@@ -45,12 +45,6 @@ WebUtil.URL_Util=(function(){
     return options;
   }
 
-  function get_url_option(k){
-    var p={};
-    location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi,function(s,k,v){p[k]=decodeURIComponent(v)})
-    return k?p[k]:p;
-  }
-
   function add_option_to_url(url, name, value){
     var pos = url.indexOf("?");
     if (pos==-1){
@@ -64,10 +58,9 @@ WebUtil.URL_Util=(function(){
   }
 
   return {
-    add_option_to_url,
     is_url,
-    stringify_url_options,
-    decode_url_options,
-    get_url_option
+    add_option_to_url,
+    encode_url_options,
+    decode_url_options
   };
 })();

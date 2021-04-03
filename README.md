@@ -35,4 +35,16 @@ Returns url query
   console.log(query); // a=b&c=d
 ```
 
+### add_option_to_url(url, name, value)
 
+Sets an URL parameter on a URL. 
+
+```
+  console.log( add_option_to_url("https://example.com/a", "foo", "bar"))         // ?foo=bar
+  console.log( add_option_to_url("https://example.com/a?foo=bar", "foo", "baz")) // ?foo=baz
+```
+
+
+### is_url(str)
+
+Checks if `str` looks like a URL.
