@@ -3,7 +3,7 @@
   Go to https://example.com 
 </div>
 <script>
-    function demo(){
+    async function demo(){
       var { Rand_Util } = WebUtil;
       console.log( Rand_Util.random_hex_string() );
 
@@ -23,10 +23,18 @@
       console.log( Date_Util.time_remaining_until( new Date(), date ) ) // 1 day
       console.log( Date_Util.date_str_to_epoch( "2021/04/11" ) )        // 1618124400
       console.log( Date_Util.date_to_epoch( date ) )                    // 1617934205
+
+      const { Net_Util } = WebUtil;
+      var url = "https://code.jquery.com/jquery-3.6.0.slim.min.js";
+      var bytes = await Net_Util.fetch_as_byte_array( url, {
+        integrity: 'sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=' 
+      });
+      console.log(`Downloaded ${bytes.length} bytes`);
     }
   </script>
   <script src="./rand_util.js"></script>
   <script src="./url_util.js"></script>
   <script src="./html_util.js"></script>
   <script src="./date_util.js"></script>
+  <script src="./net_util.js"></script>
 </body>

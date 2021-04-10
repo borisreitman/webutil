@@ -142,3 +142,24 @@ console.log( Rand_Util.random_hex_string() ) // f5b2aa71fb6c5e2da20291e6c6047d43
 ### random_hex_string(length = 32)
 
 Uses `crypto.getRandomValues` to generate a strong random string in which every two characters is a hex code. You can get a shorter equivalent string with the same entropy if you "compress" it by hashing it.
+
+
+
+## Net_Util
+
+Downloading and fetching data
+
+```
+const { Net_Util } = WebUtil;
+```
+
+### fetch_as_byte_array(url, options)
+
+Calls `fetch` to GET the URL, then formats result as byte array. Returns a Promise.
+
+```
+var url = "https://code.jquery.com/jquery-3.6.0.slim.min.js";
+var bytes = await Net_Util.fetch_as_byte_array( url, {
+  integrity: 'sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI='  
+});
+```
