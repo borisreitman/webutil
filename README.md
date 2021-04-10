@@ -5,7 +5,7 @@ Contains various groupings of functions to achieve common tasks in web developme
 
 
 
-## URL_Util
+## URL Utilities
 
 Allows to manipulate query parameters of a URL. Parameters are called *options*.
 
@@ -53,7 +53,7 @@ Checks if `str` looks like a URL.
 
 
 
-## HTML_Util
+## HTML Utilities
 
 Helper functions to work with current page loaded in the browser.
 
@@ -92,7 +92,7 @@ Replaces unsafe HTML characters with their safer equivalents.
 
 
 
-## Date_Util
+## Date Utilities
 
 Function that helps to present dates to end user
 
@@ -129,7 +129,7 @@ Converts JavaScript Date object to Unix epoch time.
 
 
 
-## Rand_Util
+## Randomization Utilities
 
 Useful random functions. 
 
