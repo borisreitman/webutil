@@ -1,8 +1,8 @@
 <body onload="demo()">
-	<div id="$foo">
-		Go to https://example.com
-	</div>
-	<script>
+<div id="$foo">
+  Go to https://example.com
+</div>
+<script>
     function demo(){
       var { Rand_Util } = WebUtil;
       console.log( Rand_Util.random_hex_string() );
@@ -14,16 +14,16 @@
       const { HTML_Util } = WebUtil;
       HTML_Util.linkify($foo);
 
-			const { Date_Util } = WebUtil;
-			var date = new Date();
-			date.setDate(date.getDate() - 1)
-			console.log( Date_Util.time_ago( date, new Date() ) )             // 1 day ago
-			console.log( Date_Util.short_date( date, new Date() ) )           // Apr 8
-			console.log( Date_Util.time_remaining_until( new Date(), date ) ) // 1 day
-			console.log( Date_Util.date_str_to_epoch( "2021/04/11" ) )        // 1618124400
-			console.log( Date_Util.date_to_epoch( date ) )                    // 1617934205
+      const { Date_Util } = WebUtil;
+      var date = new Date();
+      date.setDate(date.getDate() - 1)
+      console.log( Date_Util.time_ago( date, new Date() ) )             // 1 day ago
+      console.log( Date_Util.short_date( date, new Date() ) )           // Apr 8
+      console.log( Date_Util.time_remaining_until( new Date(), date ) ) // 1 day
+      console.log( Date_Util.date_str_to_epoch( "2021/04/11" ) )        // 1618124400
+      console.log( Date_Util.date_to_epoch( date ) )                    // 1617934205
     }
-	</script>
+  </script>
   <script src="./rand_util.js"></script>
   <script src="./url_util.js"></script>
   <script src="./html_util.js"></script>
