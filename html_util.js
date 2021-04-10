@@ -65,7 +65,6 @@ WebUtil.HTML_Util=(function(){
 
   function linkify(container){
     var text = container.textContent;
-    console.log("X: text: ", text);
     while (container.hasChildNodes()) { // empty container 
       container.removeChild(container.lastChild);
     }
