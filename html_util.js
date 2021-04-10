@@ -20,6 +20,7 @@ WebUtil.HTML_Util=(function(){
   }
 
   function linkify_text(string) { // returns document fragment
+    string = " " + string + " ";
     var words = string.split(' '), ret = document.createDocumentFragment();
     var elm;
     for (var i = 0, l = words.length; i < l; i++) {
@@ -64,10 +65,11 @@ WebUtil.HTML_Util=(function(){
 
   function linkify(container){
     var text = container.textContent;
+    console.log("X: text: ", text);
     while (container.hasChildNodes()) { // empty container 
       container.removeChild(container.lastChild);
     }
-    container.appendChild(linkify_text(text));
+    container.appendChild( linkify_text(text) );
   }
 
   function encode_html_entities(str){

@@ -1,6 +1,6 @@
 <body onload="demo()">
 <div id="$foo">
-  Go to https://example.com
+  Go to https://example.com 
 </div>
 <script>
     function demo(){
@@ -11,8 +11,9 @@
       let query = "a=b&c=d";
       console.log(URL_Util.decode_url_options(query));
 
-      const { HTML_Util } = WebUtil;
-      HTML_Util.linkify($foo);
+      const { linkify, linkify_text } = WebUtil.HTML_Util;
+      linkify($foo);
+      document.body.appendChild( linkify_text("Go to https://bing.com") )
 
       const { Date_Util } = WebUtil;
       var date = new Date();

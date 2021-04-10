@@ -3,6 +3,8 @@ Web Development utilities
 
 Contains various groupings of functions to achieve common tasks in web development.
 
+
+
 ## URL_Util
 
 Allows to manipulate query parameters of a URL. Parameters are called *options*.
@@ -49,15 +51,16 @@ Sets an URL parameter on a URL.
 
 Checks if `str` looks like a URL.
 
+
+
 ## HTML_Util
 
 Helper functions to work with current page loaded in the browser.
 
-## linkify(root_element)
+## linkify(element)
 
-Will find all URLs in HTML and turn them into links. Use this in order to avoid
-generating links on the server side. Doing it on client side prevents Cross Site
-Scripting attacks.
+Use this in order to avoid generating links on the server side. Doing it on client side prevents Cross Site
+Scripting attacks. Apply this on an element containing only text.
 
 ```
   <div id="$foo">
@@ -69,6 +72,19 @@ Scripting attacks.
   </script>
 ```
 
+## linkify_text(string)
+
+Returns a document fragment in which URLs have been converted into `A` anchor tags with the urls set in the `href` attribute.
+
+```
+  <script>
+    const { linkify_text } = WebUtil.HTML_Util;
+    document.body.appendChild( linkify_text("Go to https://google.com") )
+  </script>
+```
+
+
+
 ### get_meta(name):
 
 Get meta tag of a certain name. Returns the value of the `content` attribute of
@@ -77,6 +93,7 @@ the meta tag.
 ### encode_html_entities(html)
 
 Replaces unsafe HTML characters with their safer equivalents.
+
 
 
 ## Date_Util
@@ -115,6 +132,7 @@ Takes in a string formatted as above. Gives time in Unix Epoch of a certain date
 ### date_to_epoch(date_obj)
 
 Converts JavaScript Date object to Unix epoch time.
+
 
 
 ## Rand_Util
