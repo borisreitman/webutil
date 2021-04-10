@@ -149,7 +149,7 @@ Uses `crypto.getRandomValues` to generate a strong random string in which every 
 
 
 
-## Net_Util
+## Network Utilities
 
 Downloading and fetching data
 
@@ -170,13 +170,43 @@ var bytes = await Net_Util.fetch_as_byte_array( url, {
 
 
 
-## Crypt_Util
+## Data Utilities
+
+Various data format conversions.  Use these functions to encode raw binary data, such as raw cryptogarphic keys, if you need to send them over the network.
+
+Note that there is a difference between Base64 encoded string, and a  Base64-URL encoded string.
+string.  In particular, JSON Web Keys (JWK) use the Base64-URL encoding to represent keys (the `k` field).
+
+All functions are synchronous.
+
+### base64_url_encode( base64_string )
+
+Takes an already Base64 encoded string, and converts it into Base64-URL encoded
+string. 
+
+### base64_url_decode( string )
+
+Takes an a Base64-URL encoded string, and returns a Base64 encoded string.
+
+### base64_encode_byte_array( byte_array )
+
+Encodes byte array to base64.
+
+### base64_url_encode_byte_array( byte_array )
+
+Use this to strigify raw cryptographic material in one function call. 
+
+
+
+## Cryptographic Utilities
 
 Cryptographic operations and hashing. All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
 
 ```
 const { Crypt_Util } = WebUtil;
 ```
+
+
 
 ### HMAC signatures
 
@@ -189,6 +219,8 @@ const { Crypt_Util } = WebUtil;
     console.log("verified");
   }
 ```
+
+
 
 ### Elliptic Curve Diffie-Hellman exchange (ECDH)
 
@@ -220,7 +252,7 @@ because the public keys are long.
   console.log(session_raw2);
 ```
 
-### get_hmac_key(byte_array)
+### get_hmac_key(byte_array, disable_extracting = false)
 
 Expects a byte array of length 32 bytes.  You can get random bytes to use as the input here, using `Rand_Util.random_bytes(32)`.
 
@@ -247,11 +279,11 @@ Like above, but takes a byte array instead of a string.
 Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise. 
 Use this for sending a key over the network.
 
-### get_dh_key(jwk)
+### get_dh_key(jwk, disable_extracting = false)
 
 Takes a JSON Web Key received from somewhere, and returns an ECDH CryptoKey object for use with 
 other ECDH functions. Returns a Promise.
 
-### generate_dh_keypair()
+### generate_dh_keypair(disable_extracting = false)
 
 Generates a new ECDH private and public key, returning a dict `{ privateKey: ..., publicKey: ... }` where the values are CryptoKey objects. Returns a Promise.

@@ -8,10 +8,14 @@ WebUtil.Crypt_Util=(function(){
     return new TextEncoder("utf-8").encode(str);
   }
 
+  async function get_jwk(key_obj){
+     return crypto.subtle.exportKey("jwk", key_obj);
+  }
+
 
   // HMAC-SHA256
 
-  function get_hmac_key(key_byte_array){ // 32-byte long byte array
+  function get_hmac_key(key_byte_array, disable_extracting){ // 32-byte long byte array
     return crypto_subtle.importKey(
       "raw",
       key_byte_array,
@@ -19,7 +23,7 @@ WebUtil.Crypt_Util=(function(){
         name: "HMAC",
         hash: {name: "SHA-256"},
       },
-      false, // not extractable
+      !disable_extracting,
       ["sign", "verify"]
     )
   }
@@ -52,13 +56,13 @@ WebUtil.Crypt_Util=(function(){
 
   // ECDH
 
-  function get_dh_key(dh_public_key_jwk) {
+  function get_dh_key(dh_public_key_jwk, disable_extracting) {
     return crypto.subtle.importKey("jwk", dh_public_key_jwk,
       {
           name: "ECDH",
           namedCurve: "P-256",
       },
-      false, //not extractable
+      !disable_extracting,
       [] //"deriveKey" and/or "deriveBits" for private keys only (empty list if importing a public key)
     );
   }
@@ -78,15 +82,13 @@ WebUtil.Crypt_Util=(function(){
     });
   }
 
-  function generate_dh_keypair() {
-     return crypto.subtle.generateKey({name:"ECDH", namedCurve: "P-256"}, true, ["deriveKey","deriveBits"]);
+  function generate_dh_keypair(disable_extracting) {
+     return crypto.subtle.generateKey({name:"ECDH", namedCurve: "P-256"}, !disable_extracting, ["deriveKey","deriveBits"]);
   }
 
-  async function get_jwk(key_obj){
-     return crypto.subtle.exportKey("jwk", key_obj);
-  }
-    
   return {
+    get_jwk,
+
     //HMAC
     get_hmac_key,
     hmac_verify_byte_array,
@@ -95,7 +97,6 @@ WebUtil.Crypt_Util=(function(){
     hmac_verify,
 
     // ECDH
-    get_jwk,
     get_dh_key,
     generate_dh_keypair,
     derive_dh_session
