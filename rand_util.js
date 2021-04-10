@@ -13,7 +13,14 @@ WebUtil.Rand_Util=(function(){
 		return Array.from(arr, _dec2hex).join('');
 	}
 
+  function random_bytes(size){
+    var data = new Uint8Array(size);
+    crypto.getRandomValues(data);
+    return data;
+  }
+
   return {
-    random_hex_string
+    random_hex_string, 
+    random_bytes
   };
 })();

@@ -139,6 +139,10 @@ const { Rand_Util } = WebUtil;
 console.log( Rand_Util.random_hex_string() ) // f5b2aa71fb6c5e2da20291e6c6047d43
 ```
 
+### random_bytes(length)
+
+Uses `crypto.getRandomValues` to generate a strong random bytes, and returns it as UInt8Array.
+
 ### random_hex_string(length = 32)
 
 Uses `crypto.getRandomValues` to generate a strong random string in which every two characters is a hex code. You can get a shorter equivalent string with the same entropy if you "compress" it by hashing it.
@@ -163,3 +167,38 @@ var bytes = await Net_Util.fetch_as_byte_array( url, {
   integrity: 'sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI='  
 });
 ```
+
+
+
+## Crypt_Util
+
+Cryptographic operations and hashing. All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
+
+```
+const { Crypt_Util } = WebUtil;
+```
+
+### get_hmac_key(byte_array)
+
+Expects a byte array of length 32 bytes.  You can get random bytes to use as the input here, using `Rand_Util.random_bytes(32)`.
+
+Returns a Promise of a key object to plug into other HMAC functions.
+
+### hmac_sign(key, str)
+
+Expects a key and a string. Returns a Promise of HMAC-SHA256 signature inside a byte array.
+
+### hmac_sign_byte_array(key, data)
+
+Like above, but takes a byte array instead of a string. 
+
+### hmac_verify(key, signature, string)
+
+Verifies an HMAC signature against another string.
+
+### hmac_verify_byte_array(key, signature, byte_array)
+
+Like above, but takes a byte array instead of a string.
+
+
+

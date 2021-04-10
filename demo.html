@@ -30,6 +30,15 @@
         integrity: 'sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=' 
       });
       console.log(`Downloaded ${bytes.length} bytes`);
+
+
+      const { hmac_sign, hmac_verify, get_hmac_key } = WebUtil.Crypt_Util;
+      var raw = Rand_Util.random_bytes(32);
+      var key = await get_hmac_key(raw);
+      var sig = await hmac_sign(key, "hello world")
+      if (hmac_verify(key, sig, "hello world")){
+        console.log("verified");
+      }
     }
   </script>
   <script src="./rand_util.js"></script>
@@ -37,4 +46,5 @@
   <script src="./html_util.js"></script>
   <script src="./date_util.js"></script>
   <script src="./net_util.js"></script>
+  <script src="./crypt_util.js"></script>
 </body>
