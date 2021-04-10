@@ -1,12 +1,13 @@
 'use strict';
+var WebUtil; if (!WebUtil) WebUtil = {};
 
-if (typeof(WebUtil)=="undefined"){
-  WebUtil = {};
-}
-
-SUBROSA.Date_Util=(function(){
+WebUtil.Date_Util=(function(){
 
   var month_name_en = [ 'Jan','Feb','March', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
+
+  function plural(count, word){
+    return count > 1 ? word+"s" : word;
+  }
 
   function short_date(past_date, reference_date){
     if (!reference_date){
@@ -102,7 +103,6 @@ SUBROSA.Date_Util=(function(){
     }
 
     var minutes = Math.floor(seconds/60);
-    console.log("minutes: ", minutes);
     var hours = Math.floor(minutes/60);
     var days = Math.floor(hours/24);
 
@@ -151,11 +151,11 @@ SUBROSA.Date_Util=(function(){
     return epoch;
   }
 
-  return SUBROSA.module_exports({public:{
+  return {
     short_date,
     time_remaining_until,
     time_ago,
     date_str_to_epoch,
     date_to_epoch,
-  }});
+  };
 })();

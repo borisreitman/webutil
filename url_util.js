@@ -1,8 +1,5 @@
 'use strict';
-
-if (typeof(WebUtil)=="undefined"){
-  WebUtil = {};
-}
+var WebUtil; if (!WebUtil) WebUtil = {};
 
 WebUtil.URL_Util=(function(){
 

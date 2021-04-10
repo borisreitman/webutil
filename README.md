@@ -64,13 +64,13 @@ Scripting attacks.
     Go to https://example.com
   </div>
   <script>
-    var { HTML_Util } = WebUtil;
+    const { HTML_Util } = WebUtil;
     HTML_Util.linkify($foo);
   </script>
 ```
 
 ### get_meta(name):
-  
+
 Get meta tag of a certain name. Returns the value of the `content` attribute of
 the meta tag.
 
@@ -117,3 +117,15 @@ Takes in a string formatted as above. Gives time in Unix Epoch of a certain date
 Converts JavaScript Date object to Unix epoch time.
 
 
+## Rand_Util
+
+```
+const { Rand_Util } = WebUtil;
+
+console.log( Rand_Util.random_hex_string() ) // f5b2aa71fb6c5e2da20291e6c6047d43
+```
+
+### random_hex_string(length = 32)
+
+Uses `crypto.getRandomValues` to generate a strong random string in which every
+two characters is a hex code. You can get a shorter equivalent string if you "compress" it by hashing it.
