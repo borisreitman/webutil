@@ -59,8 +59,7 @@ Helper functions to work with current page loaded in the browser.
 
 ## linkify(element)
 
-Use this in order to avoid generating links on the server side. Doing it on client side prevents Cross Site
-Scripting attacks. Apply this on an element containing only text.
+Use this in order to avoid generating links on the server side. Doing it on client side prevents Cross Site Scripting attacks. Apply this on an element containing only text.
 
 ```
   <div id="$foo">
@@ -79,16 +78,13 @@ Returns a document fragment in which URLs have been converted into `A` anchor ta
 ```
   <script>
     const { linkify_text } = WebUtil.HTML_Util;
-    document.body.appendChild( linkify_text("Go to https://google.com") )
+    document.body.appendChild( linkify_text("Go to https://example.com") )
   </script>
 ```
 
-
-
 ### get_meta(name):
 
-Get meta tag of a certain name. Returns the value of the `content` attribute of
-the meta tag.
+Get meta tag of a certain name. Returns the value of the `content` attribute of the meta tag.
 
 ### encode_html_entities(html)
 
@@ -100,8 +96,7 @@ Replaces unsafe HTML characters with their safer equivalents.
 
 Function that helps to present dates to end user
 
-The `current_date` parameter should be set to current time `new Date()`. It's
-left configurable for unit testing purposes.
+The `current_date` parameter should be set to current time `new Date()`. It's left configurable for unit testing purposes.
 
 ```
 const { Date_Util } = WebUtil;
@@ -114,8 +109,7 @@ console.log( Date_Util.time_ago( date, new Date() ) ) // "1 day ago"
 
 ### short_date(past_date, current_date)
 
-Format date and time of a date object as consisely as possible, loosing
-precision when the date is too distant relative to the current date.
+Format date and time of a date object as consisely as possible, loosing precision when the date is too distant relative to the current date.
 
 ### time_ago(past_date, current_date)
 
@@ -137,6 +131,8 @@ Converts JavaScript Date object to Unix epoch time.
 
 ## Rand_Util
 
+Useful random functions. 
+
 ```
 const { Rand_Util } = WebUtil;
 
@@ -145,5 +141,4 @@ console.log( Rand_Util.random_hex_string() ) // f5b2aa71fb6c5e2da20291e6c6047d43
 
 ### random_hex_string(length = 32)
 
-Uses `crypto.getRandomValues` to generate a strong random string in which every
-two characters is a hex code. You can get a shorter equivalent string if you "compress" it by hashing it.
+Uses `crypto.getRandomValues` to generate a strong random string in which every two characters is a hex code. You can get a shorter equivalent string with the same entropy if you "compress" it by hashing it.
