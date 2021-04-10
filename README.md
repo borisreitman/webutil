@@ -178,6 +178,48 @@ Cryptographic operations and hashing. All byte arrays are of type UInt8Array.  A
 const { Crypt_Util } = WebUtil;
 ```
 
+### HMAC signatures
+
+```
+  const { hmac_sign, hmac_verify, get_hmac_key } = WebUtil.Crypt_Util;
+  var raw = Rand_Util.random_bytes(32);
+  var key = await get_hmac_key(raw);
+  var sig = await hmac_sign(key, "hello world")
+  if (hmac_verify(key, sig, "hello world")){
+    console.log("verified");
+  }
+```
+
+### Elliptic Curve Diffie-Hellman exchange (ECDH)
+
+Note that all the functions are named `_dh_` but in fact they are doing ECDH. 
+Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation 
+because the public keys are long.
+
+```
+  const { generate_dh_keypair, derive_dh_session, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
+  // Alice does
+  var alice_keypair = await generate_dh_keypair();
+  var alice_pubkey_jwk = await get_jwk(alice_keypair.publicKey);
+
+  // Send Alice's pub key to Bob
+  // Bob does
+  var bob_keypair = await generate_dh_keypair();
+  var bob_pubkey_jwk = await get_jwk(bob_keypair.publicKey);
+
+  var alice_pubkey = await get_dh_key(alice_pubkey_jwk);
+  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
+
+  // Send Bob's pub key to Alice
+  // Alice does
+  var bob_pubkey = await get_dh_key(bob_pubkey_jwk);
+  var session_raw2 = await derive_dh_session(alice_keypair.privateKey, bob_pubkey)
+
+  // both should be equal
+  console.log(session_raw);
+  console.log(session_raw2);
+```
+
 ### get_hmac_key(byte_array)
 
 Expects a byte array of length 32 bytes.  You can get random bytes to use as the input here, using `Rand_Util.random_bytes(32)`.
@@ -200,5 +242,16 @@ Verifies an HMAC signature against another string.
 
 Like above, but takes a byte array instead of a string.
 
+### get_jwk(key)
 
+Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise. 
+Use this for sending a key over the network.
 
+### get_dh_key(jwk)
+
+Takes a JSON Web Key received from somewhere, and returns an ECDH CryptoKey object for use with 
+other ECDH functions. Returns a Promise.
+
+### generate_dh_keypair()
+
+Generates a new ECDH private and public key, returning a dict `{ privateKey: ..., publicKey: ... }` where the values are CryptoKey objects. Returns a Promise.

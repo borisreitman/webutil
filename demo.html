@@ -39,6 +39,28 @@
       if (hmac_verify(key, sig, "hello world")){
         console.log("verified");
       }
+
+      const { generate_dh_keypair, derive_dh_session, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
+      // Alice does
+      var alice_keypair = await generate_dh_keypair();
+      var alice_pubkey_jwk = await get_jwk(alice_keypair.publicKey);
+
+      // Send Alice's pub key to Bob
+      // Bob does
+      var bob_keypair = await generate_dh_keypair();
+      var bob_pubkey_jwk = await get_jwk(bob_keypair.publicKey);
+
+      var alice_pubkey = await get_dh_key(alice_pubkey_jwk);
+      var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
+
+      // Send Bob's pub key to Alice
+      // Alice does
+      var bob_pubkey = await get_dh_key(bob_pubkey_jwk);
+      var session_raw2 = await derive_dh_session(alice_keypair.privateKey, bob_pubkey)
+
+      // both should be equal
+      console.log(session_raw);
+      console.log(session_raw2);
     }
   </script>
   <script src="./rand_util.js"></script>
