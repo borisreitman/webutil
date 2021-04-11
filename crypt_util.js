@@ -71,7 +71,7 @@ WebUtil.Crypt_Util=(function(){
     );
   }
 
-  function derive_dh_session(private_key, public_key) {
+  function derive_dh_shared_secret(private_key, public_key) {
     var result = {};
     return crypto.subtle.deriveBits(
       {
@@ -174,7 +174,7 @@ WebUtil.Crypt_Util=(function(){
     // ECDH
     get_dh_key,
     generate_dh_keypair,
-    derive_dh_session,
+    derive_dh_shared_secret,
 
     // AES
     symmetric_encrypt,

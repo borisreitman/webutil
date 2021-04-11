@@ -267,7 +267,7 @@ Usually DH means RSA based exchange however RSA  is not desirable for a shared s
 because the public keys are long.
 
 ```javascript
-  const { generate_dh_keypair, derive_dh_session, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
+  const { generate_dh_keypair, derive_dh_shared_secret, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
   // Alice does
   var alice_keypair = await generate_dh_keypair();
   var alice_pubkey_jwk = await get_jwk(alice_keypair.publicKey);
@@ -278,16 +278,16 @@ because the public keys are long.
   var bob_pubkey_jwk = await get_jwk(bob_keypair.publicKey);
 
   var alice_pubkey = await get_dh_key(alice_pubkey_jwk);
-  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
+  var shared_secret_raw = await derive_dh_shared_secret(bob_keypair.privateKey, alice_pubkey)
 
   // Send Bob's pub key to Alice
   // Alice does
   var bob_pubkey = await get_dh_key(bob_pubkey_jwk);
-  var session_raw2 = await derive_dh_session(alice_keypair.privateKey, bob_pubkey)
+  var shared_secret_raw2 = await derive_dh_shared_secret(alice_keypair.privateKey, bob_pubkey)
 
   // both should be equal
-  console.log(session_raw);
-  console.log(session_raw2);
+  console.log(shared_secret_raw);
+  console.log(shared_secret_raw2);
 ```
 
 ##### get_dh_key(jwk, disable_extracting = false)
@@ -325,17 +325,17 @@ Uses AES-256 GCM to do the encryption, with tag length of 128.
 
 ### Combining ECDH with symmetric encryption
 
-Use the `get_symmetric_key_from_string` function to create a key from the ECDH established session string. 
+Use the `get_symmetric_key_from_string` function to create a key from the ECDH established shared_secret string. 
 
-Recall that the `session_raw` value in the ECDH example was returned by the `derive_dh_session()` function. The shared bytes are precisely the right length for the AES-256 key (namely 32 bytes), and the Base64-URL encoding is what a JSON Web Key needs in the `k` field.
+Recall that the `shared_secret_raw` value in the ECDH example was returned by the `derive_dh_shared_secret()` function. The shared bytes are precisely the right length for the AES-256 key (namely 32 bytes), and the Base64-URL encoding is what a JSON Web Key needs in the `k` field.
 
 ```javascript
   const { get_symmetric_key_from_string } = WebUtil.Crypt_Util;
 
-  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
-  var session = base64_url_encode_byte_array(session_raw);
+  var shared_secret_raw = await derive_dh_shared_secret(bob_keypair.privateKey, alice_pubkey)
+  var shared_secret = base64_url_encode_byte_array(shared_secret_raw);
 
-  var key = await get_symmetric_key_from_string(session);
+  var key = await get_symmetric_key_from_string(shared_secret);
 ```
 
 
