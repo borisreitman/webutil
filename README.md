@@ -1,9 +1,21 @@
-# webutil
-Web Development utilities
+# webutil - Web Development Utilities
+## Overview
 
 Contains various groupings of functions to achieve common tasks in web development. Note that the separate modules have no cross dependencies. 
 
 This code is provided for educational purposes. You can use it as is, or copy-paste function implementations that are relevant to your project.
+
+Note that the cryptographic functions largely rely on browser's built-in implementation. You still need to have a clue about how it all works, otherwise you may misuse them.
+
+Brief summary of utility groups:
+
+* URL utilities -- parsing of URL parameters
+* HTML utilities - DOM manipulation, escaping special characters, etc.
+* Date utilities - show dates in a userfriendly consise way (e.g. "1 day ago")
+* Randomization utilities -- random strings and random bytes
+* Network utilities -- fetching remote resources
+* Data utilities -- serialization and deserialization of byte arrays
+* Cryptographic utilities -- encrypt and decrypt in the browser, when not trusting the server.
 
 
 
