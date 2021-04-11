@@ -3,6 +3,8 @@ Web Development utilities
 
 Contains various groupings of functions to achieve common tasks in web development. Note that the separate modules have no cross dependencies. 
 
+This code is provided for educational purposes. You can use it as is, or copy-paste function implementations that are relevant to your project.
+
 
 
 ## URL Utilities
@@ -215,6 +217,10 @@ The opposite operation. Returns a shallow copy of the dict.  It doesn't descent 
 
 ## Cryptographic Utilities
 
+```
+const { Crypt_Util } = WebUtil;
+```
+
 The cryptographic utilities assist you to communicate security over the Internet, and are broken into three parts. 
 
 First, the HMAC utilities are there to allow you to communicate public information with authenticity verification. You may want to use this to communicate things like public keys, email addresses, phone numbers, and cryptocurrency addresses. The information is not secret, but it needs to make to the other side unmodified. 
@@ -223,21 +229,16 @@ Second part contains utility functions for a Diffie-Hellman exchange.  Use this 
 
 The third part is for symmetric encryption, which uses AES-256 GCM variant. Once you have a shared secret on both sides of communication, use this to encrypt and decrypt information. Every encryption call requires a nonce value which is 12 bytes long. You can use `Rand_Util.random_bytes(12)` to generate it.  You will need to pass this nonce to the other side, together with the ciphertext. 
 
-Part of symmetric encrytion is also the ability to treat keys as data and encrypt them with another key. This second key is called Key Encryption Key (KEK). The terminology is to wrap and unwrap a key. When the key is wrapped, it can be communicated by an insecure channel. The technique of wrapping keys allows to encrypt a large file once, and send it to multiple people, each of which do not know each other's symmetric key.
-
-All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
-
-```
-const { Crypt_Util } = WebUtil;
-```
+Part of symmetric encrytion is also the ability to treat keys as data and encrypt them with another key. This second key is called a Key Encryption Key (KEK), and the further terminology is to *wrap* and *unwrap* a key. When the key is wrapped, it can be communicated by an insecure channel. The technique of wrapping keys allows to encrypt a large file once, and send it to multiple people, each of whom do not know each other's symmetric key.
 
 The `disable_extracting` parameter is on all the functions that create a CryptoKey object. If set to `true`, the key may not be exported from memory into JWK. (The web browser uses this for extra protectiong from Cross-Site-Scripting attacks.)
 
-Most functions return byte arrays of type `UInt8Array`. If you need to save the results on the server, you will want to Base64 encode it.  Use helper function `encode_byte_arrays_in_dict` and the corresponding decoding function in the Data utilities above. (You will need to track both the ciphertext byte array as well as the nonce byte array, so place them in a dict and encode it.)
-
+All cryptogarphic operations are performed using Brower's built-in facilities of the `window.crypto` API.  Most functions return byte arrays of type `UInt8Array`. If you need to save the results on the server, you will want to Base64 encode it.  Use helper function `encode_byte_arrays_in_dict` and the corresponding decoding function in the Data utilities above. (You will need to track both the ciphertext byte array as well as the nonce byte array, so place them in a dict and encode it.)
 
 
 ### HMAC Signatures
+
+The MAC in HMAC stands for Message Authenication Code and the 'H' stands for hashing. This implementation uses SHA-256 hashing function.
 
 ```javascript
   const { hmac_sign, hmac_verify, get_hmac_key } = WebUtil.Crypt_Util;
@@ -277,7 +278,7 @@ Like above, but takes a byte array instead of a string.
 
 Uses ECDH with the browser built-in elliptic curve `P-256`.
 
-Note that all the functions are named `_dh_` but in fact they are doing ECDH.  Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation because the public keys are long.
+Note that all the functions are named `_dh_` but in fact they are doing ECDH.  Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation because the public keys would be too long. This elliptic curve implmentation uses `x` and `y` coordinates to represent an encryption key, each of which occupies 32 bytes. When you export the keys using `get_jwk` function, you will have these coordinates each Base64-URL encoded.
 
 ```javascript
   const { generate_dh_keypair, derive_dh_shared_secret, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
@@ -338,7 +339,9 @@ Uses AES-256 GCM to do the encryption, with tag length of 128.
 
 ### Combining ECDH with symmetric encryption
 
-Use the `get_symmetric_key_from_string` function to create a key from the ECDH established shared_secret string. 
+Use the `get_symmetric_key_from_string` or `get_symmetric_key_from_byte_array` functions to create a key from the ECDH established shared_secret string. 
+
+You will most likely store the shared secret somewhere in browser session storage as string, so using the `..._from_string` variant will be more convenient.
 
 Recall that the `shared_secret_raw` value in the ECDH example was returned by the `derive_dh_shared_secret()` function. The shared bytes are precisely the right length for the AES-256 key (namely 32 bytes), and the Base64-URL encoding is what a JSON Web Key needs in the `k` field.
 
@@ -349,9 +352,8 @@ Recall that the `shared_secret_raw` value in the ECDH example was returned by th
   var shared_secret = base64_url_encode_byte_array(shared_secret_raw);
 
   var key = await get_symmetric_key_from_string(shared_secret);
+  //OR: var key = await get_symmetric_key_from_byte_array(shared_secret_raw);
 ```
-
-
 
 
 ##### symmetric_encrypt(key, nonce, string)
@@ -398,7 +400,7 @@ Helper function to generate a new CryptoKey of type AES-256 GCM.
 
 ### Wrapping Keys
 
-Wrapping keys with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a message with a key A once and send to multiple people. All you need to do is to encrypt or "wrap" the key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the message. Then you send to each person the message ciphertext, as well as the wrap of the key he will need to decrypt the message. But first he would have to unwrap the key.
+Wrapping keys with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a large file with a key A once and send to multiple people. All you need to do is to encrypt or "wrap" the key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the file. Then you send to each person the message ciphertext, as well as the wrap of the key he will need to decrypt the message. (But first he would have to unwrap the key.)
 
 Because the wrapping function returns a byte array, and you probably want to send it to the server, you will need to base64 encode it.  Remember that you will need to store the nonce as well, which is also a byte array.
 
