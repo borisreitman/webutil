@@ -8,6 +8,10 @@ WebUtil.Crypt_Util=(function(){
     return new TextEncoder("utf-8").encode(str);
   }
 
+  function _get_string_from_byte_array(byte_array) {
+    return new TextDecoder("utf-8").decode(byte_array);
+  }
+
   async function get_jwk(key_obj){
      return crypto.subtle.exportKey("jwk", key_obj);
   }
@@ -86,6 +90,77 @@ WebUtil.Crypt_Util=(function(){
      return crypto.subtle.generateKey({name:"ECDH", namedCurve: "P-256"}, !disable_extracting, ["deriveKey","deriveBits"]);
   }
 
+  // AES 256 GCM
+
+  function get_symmetric_key_from_string(key_str, disable_extracting){
+    // first convert str into a full jwk key, with all the right options
+    var key_jwk = {
+      k: key_str,
+      alg: "A256GCM",
+      ext: true,
+      kty: "oct",
+      key_ops:["encrypt","decrypt","wrapKey","unwrapKey"]
+    };
+    return get_symmetric_key(key_jwk, disable_extracting);
+  }
+
+  function get_symmetric_key(key_jwk, disable_extracting){
+    // first convert str into a full jwk key, with all the right options
+    return crypto.subtle.importKey("jwk", key_jwk, { name: "AES-GCM" }, !disable_extracting, ["encrypt","decrypt","wrapKey","unwrapKey"]);
+  }
+
+  function symmetric_encrypt(key, nonce, str){
+    return symmetric_encrypt_byte_array(key, nonce, _get_byte_array(str));
+  }
+
+  function symmetric_encrypt_byte_array(key, nonce, data){
+    return crypto_subtle.encrypt(
+      {
+        name: "AES-GCM",
+        iv: nonce,
+        tagLength: 128,
+      },
+      key,
+      data
+    )
+    .then(function(encrypted){
+      return new Uint8Array(encrypted);
+    })
+  }
+
+  function symmetric_decrypt_byte_array(key, nonce, data){
+    return crypto_subtle.decrypt(
+      {
+        name: "AES-GCM",
+        iv: nonce,
+        tagLength: 128,
+      },
+      key,
+      data
+    )
+    .then(function(decrypted){
+      return new Uint8Array(decrypted);
+    });
+  }
+
+  function symmetric_decrypt(key, nonce, data){
+    return symmetric_decrypt_byte_array(key, nonce, data).then(function(byte_array){
+      return _get_string_from_byte_array(byte_array);
+		});
+  }
+
+  function generate_symmetric_key(disable_extracting){
+    return crypto_subtle.generateKey(
+      {
+        name: "AES-GCM",
+        length: 256, 
+      },
+      !disable_extracting,
+      ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
+    )
+  }
+
+
   return {
     get_jwk,
 
@@ -99,7 +174,16 @@ WebUtil.Crypt_Util=(function(){
     // ECDH
     get_dh_key,
     generate_dh_keypair,
-    derive_dh_session
+    derive_dh_session,
+
+    // AES
+    symmetric_encrypt,
+    symmetric_decrypt,
+    symmetric_encrypt_byte_array,
+    symmetric_decrypt_byte_array,
+    get_symmetric_key_from_string,
+    get_symmetric_key,
+    generate_symmetric_key
 
   };
 })();

@@ -41,7 +41,7 @@
         console.log("verified");
       }
 
-      const { base64_url_encode_byte_array } = WebUtil.Data_Util;
+      const { base64_url_encode_byte_array, base64_encode_byte_array } = WebUtil.Data_Util;
       const { generate_dh_keypair, derive_dh_session, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
       // Alice does
       var alice_keypair = await generate_dh_keypair();
@@ -65,6 +65,27 @@
       // both should be equal
       console.log(session);
       console.log(session2);
+
+
+      // AES-256 GCM
+
+      const { symmetric_encrypt, generate_symmetric_key,
+              get_symmetric_key_from_string, symmetric_decrypt } = WebUtil.Crypt_Util;
+      const { base64_decode_to_byte_array } = WebUtil.Data_Util;
+
+      // the Base64-URL encoded ECDH established session from above should work as an AES key
+      var key = await get_symmetric_key_from_string(session);
+      var key = await generate_symmetric_key();
+
+      var nonce = await Rand_Util.random_bytes(12);
+      var ciphertext = await symmetric_encrypt(key, nonce, "hello world")
+
+      // send nonce and ciphertext over the network
+
+      var plaintext = await symmetric_decrypt(key, nonce, ciphertext);
+      if (plaintext == "hello world"){
+        console.log("valid");
+      }
     }
   </script>
   <script src="./rand_util.js"></script>

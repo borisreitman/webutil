@@ -47,10 +47,15 @@ WebUtil.Data_Util=(function(){
 		return base64_url_encode( base64_encode_byte_array(byte_array) );
   }
 
+	function base64_decode_to_byte_array(str) {
+		return Uint8Array.from(atob(str), c => c.charCodeAt(0))
+	}
+
   return {
     base64_url_encode,
     base64_url_decode,
     base64_encode_byte_array,
-    base64_url_encode_byte_array
+    base64_url_encode_byte_array,
+    base64_decode_to_byte_array
   };
 })();

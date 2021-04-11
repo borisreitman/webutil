@@ -196,6 +196,9 @@ Encodes byte array to base64.
 
 Use this to strigify raw cryptographic material in one function call. 
 
+#### base64_decode_to_byte_array( str )
+
+Decodes a Base64 encoded string to a Uint8Array.
 
 
 ## Cryptographic Utilities
@@ -224,6 +227,8 @@ const { Crypt_Util } = WebUtil;
 
 #### Elliptic Curve Diffie-Hellman exchange (ECDH)
 
+Uses ECDH with the browser built-in elliptic curve `P-256`.
+
 Note that all the functions are named `_dh_` but in fact they are doing ECDH. 
 Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation 
 because the public keys are long.
@@ -251,6 +256,44 @@ because the public keys are long.
   console.log(session_raw);
   console.log(session_raw2);
 ```
+
+## Symmetric Encryption
+
+Uses AES-256 GCM to do the encryption, with tag length of 128.
+
+```
+  const { symmetric_encrypt, generate_symmetric_key, symmetric_decrypt } = WebUtil.Crypt_Util;
+
+  var key = await generate_symmetric_key();
+
+  var nonce = await Rand_Util.random_bytes(12);
+  var ciphertext = await symmetric_encrypt(key, nonce, "hello world")
+
+  // send nonce and ciphertext over the network
+
+  var plaintext = await symmetric_decrypt(key, nonce, ciphertext);
+  if (plaintext == "hello world"){
+    console.log("valid");
+  }
+```
+
+### Combining ECDH with symmetric encryption
+
+Use the `get_symmetric_key_from_string` to create a key from the ECDH
+established session string. Recall that the session string is a Base64-URL
+encoding of the shared bytes returned by the `derive_dh_session()` function.
+The shared bytes are precisely the right length for the AES-256 key, and the
+Base64-URL encoding is what a JSON Web Key needs in the `k` field.
+
+```
+  const { get_symmetric_key_from_string } = WebUtil.Crypt_Util;
+
+  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
+  var session = base64_url_encode_byte_array(session_raw);
+
+  var key = await get_symmetric_key_from_string(session);
+```
+
 
 #### get_hmac_key(byte_array, disable_extracting = false)
 
@@ -287,3 +330,37 @@ other ECDH functions. Returns a Promise.
 #### generate_dh_keypair(disable_extracting = false)
 
 Generates a new ECDH private and public key, returning a dict `{ privateKey: ..., publicKey: ... }` where the values are CryptoKey objects. Returns a Promise.
+
+
+#### symmetric_encrypt(key, nonce, string)
+
+Encrypts a string with AES-256 GCM encryption, using the provided `nonce` as
+initialization vection (the `iv` parameter). The key must be AES-256 GCM CryptoKey object. Returns a Promise.
+
+#### symmetric_decrypt(key, nonce, byte_array)
+
+Like above, but decrypts and returns a string. Use only if you expect that the plaintext is a string, 
+and not a raw binary data.
+
+#### symmetric_encrypt_byte_array(key, nonce, byte_array)
+
+Like `symmetric_encrypt` function, but takes a byte array.
+
+#### symmetric_decrypt_byte_array(key, nonce, byte_array)
+
+Like `symmetric_decrypt` function, but returns a byte array instead of a string.
+Use this if you expect some kind of large data coming out of the decryption.
+
+#### get_symmetric_key(disable_extracting = false)
+
+Takes a JSON Web Key (JWK) as input, and returns an equivalent AES-GCM CryptoKey object.
+
+#### get_symmetric_key_from_string(disable_extracting = false)
+
+Like above, but only takes in the value for the `k` field in a JSON Web Key (JWK) data structure, and hardcodes the rest accoring to AES-256 GCM.  
+
+You can produce this value from a random set of 32 bytes, by first encoding it using Base64-URL encoding. You can use `Data_Util.base64_url_encode_byte_array` utility function to do it.
+
+#### generate_symmetric_key(disable_extracting = false)
+
+Helper function to generate a new CryptoKey of type AES-256 GCM.
