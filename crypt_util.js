@@ -104,6 +104,16 @@ WebUtil.Crypt_Util=(function(){
     return get_symmetric_key(key_jwk, disable_extracting);
   }
 
+  function get_symmetric_key_from_byte_array(key_byte_array, disable_extracting){
+    return crypto_subtle.importKey(
+      "raw", //can be "jwk" or "raw"
+      key_byte_array,
+      { name: "AES-GCM" },
+      !disable_extracting,
+      ["encrypt","decrypt","wrapKey","unwrapKey"]
+    );
+  }
+
   function get_symmetric_key(key_jwk, disable_extracting){
     // first convert str into a full jwk key, with all the right options
     return crypto.subtle.importKey("jwk", key_jwk, { name: "AES-GCM" }, !disable_extracting, ["encrypt","decrypt","wrapKey","unwrapKey"]);
@@ -218,6 +228,7 @@ WebUtil.Crypt_Util=(function(){
     symmetric_encrypt_byte_array,
     symmetric_decrypt_byte_array,
     get_symmetric_key_from_string,
+    get_symmetric_key_from_byte_array,
     get_symmetric_key,
     generate_symmetric_key,
 

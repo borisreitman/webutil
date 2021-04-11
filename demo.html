@@ -69,13 +69,15 @@
 
       // AES-256 GCM
 
-      const { symmetric_encrypt, generate_symmetric_key,
-              get_symmetric_key_from_string, symmetric_decrypt } = WebUtil.Crypt_Util;
+      const { symmetric_encrypt, symmetric_decrypt, generate_symmetric_key,
+              get_symmetric_key_from_byte_array,
+              get_symmetric_key_from_string } = WebUtil.Crypt_Util;
       const { base64_decode_to_byte_array } = WebUtil.Data_Util;
 
       // the Base64-URL encoded ECDH established shared_secret from above should work as an AES key
       var key = await get_symmetric_key_from_string(shared_secret);
-      //var key = await generate_symmetric_key();
+      //OR: var key = await generate_symmetric_key();
+      //OR: var key = await get_symmetric_key_from_byte_array( Rand_Util.random_bytes(32) );
 
       var nonce = await Rand_Util.random_bytes(12);
       var ciphertext = await symmetric_encrypt(key, nonce, "hello world")

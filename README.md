@@ -380,6 +380,16 @@ Like above, but only takes in the value for the `k` field in a JSON Web Key (JWK
 
 You can produce this value from a random set of 32 bytes, by first encoding it using Base64-URL encoding. You can use `Data_Util.base64_url_encode_byte_array` utility function to do it.
 
+##### get_symmetric_key_from_byte_array(byte_array, disable_extracting = false)
+
+Pass a 32-bytes byte array and get an AES-GCM encryption key.  For example,
+
+```
+var key = await get_symmetric_key_from_byte_array( Rand_Util.random_bytes(32) );
+```
+
+You'll need this function if you are generating an encryption key from user's password using a Key Derivation Function (KDF) such as Scrypt. You'll usually get a byte array that you need to convert into a CryptoKey object.
+
 ##### generate_symmetric_key(disable_extracting = false)
 
 Helper function to generate a new CryptoKey of type AES-256 GCM.
