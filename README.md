@@ -262,9 +262,7 @@ Like above, but takes a byte array instead of a string.
 
 Uses ECDH with the browser built-in elliptic curve `P-256`.
 
-Note that all the functions are named `_dh_` but in fact they are doing ECDH. 
-Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation 
-because the public keys are long.
+Note that all the functions are named `_dh_` but in fact they are doing ECDH.  Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation because the public keys are long.
 
 ```javascript
   const { generate_dh_keypair, derive_dh_shared_secret, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
@@ -343,13 +341,11 @@ Recall that the `shared_secret_raw` value in the ECDH example was returned by th
 
 ##### symmetric_encrypt(key, nonce, string)
 
-Encrypts a string with AES-256 GCM encryption, using the provided `nonce` as
-initialization vection (the `iv` parameter). The key must be AES-256 GCM CryptoKey object. Returns a Promise.
+Encrypts a string with AES-256 GCM encryption, using the provided `nonce` as initialization vection (the `iv` parameter). The key must be AES-256 GCM CryptoKey object. Returns a Promise.
 
 ##### symmetric_decrypt(key, nonce, byte_array)
 
-Like above, but decrypts and returns a string. Use only if you expect that the plaintext is a string, 
-and not a raw binary data.
+Like above, but decrypts and returns a string. Use only if you expect that the plaintext is a string, and not a raw binary data.
 
 ##### symmetric_encrypt_byte_array(key, nonce, byte_array)
 
@@ -357,8 +353,7 @@ Like `symmetric_encrypt` function, but takes a byte array.
 
 ##### symmetric_decrypt_byte_array(key, nonce, byte_array)
 
-Like `symmetric_decrypt` function, but returns a byte array instead of a string.
-Use this if you expect some kind of large data coming out of the decryption.
+Like `symmetric_decrypt` function, but returns a byte array instead of a string. Use this if you expect some kind of large data coming out of the decryption.
 
 ##### get_symmetric_key(disable_extracting = false)
 
@@ -376,5 +371,4 @@ Helper function to generate a new CryptoKey of type AES-256 GCM.
 
 ##### get_jwk(key)
 
-Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise. 
-Use this for sending a key over the network.
+Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise.  Use this for sending a key over the network.
