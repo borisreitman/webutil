@@ -106,6 +106,17 @@
       if (plaintext == "hello world"){
         console.log("valid");
       }
+
+      // pack and unpack binary data
+      const { 
+        encode_byte_arrays_in_dict, 
+        decode_byte_arrays_in_dict } = WebUtil.Data_Util;
+        
+      var package = encode_byte_arrays_in_dict({ 'foo': 'bar', nonce, key_ciphertext });
+      console.log(package);
+      
+      package = decode_byte_arrays_in_dict(package);
+      console.log(package);
     }
   </script>
   <script src="./rand_util.js"></script>

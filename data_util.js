@@ -51,11 +51,42 @@ WebUtil.Data_Util=(function(){
 		return Uint8Array.from(atob(str), c => c.charCodeAt(0))
 	}
 
+  const _BASE64_PACK_PREFIX="data:;base64,";
+  
+  function encode_byte_arrays_in_dict(dict){
+    var copy = {};
+    for (var key in dict){
+      var value = dict[key];
+      if (value instanceof Uint8Array){
+        value = _BASE64_PACK_PREFIX + base64_encode_byte_array(value)
+      }
+      copy[key] = value;
+    }
+    return copy;
+  }
+
+  function decode_byte_arrays_in_dict(dict){
+    var copy = {};
+    for (var key in dict){
+      var value = dict[key];
+      if (typeof(value) === 'string' || value instanceof String){
+        if (value.startsWith(_BASE64_PACK_PREFIX) ){
+          value = value.substr(_BASE64_PACK_PREFIX.length);
+          value = base64_decode_to_byte_array( value );
+        }
+      }
+      copy[key] = value;
+    }
+    return copy;
+  }
+
   return {
     base64_url_encode,
     base64_url_decode,
     base64_encode_byte_array,
     base64_url_encode_byte_array,
-    base64_decode_to_byte_array
+    base64_decode_to_byte_array,
+    encode_byte_arrays_in_dict,
+    decode_byte_arrays_in_dict
   };
 })();

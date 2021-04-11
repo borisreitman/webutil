@@ -201,6 +201,17 @@ Use this to strigify raw cryptographic material in one function call.
 Decodes a Base64 encoded string to a Uint8Array.
 
 
+##### encode_byte_arrays_in_dict( dict )
+
+Pass a javascript Object for which some values are of type Uint8Array. Replaces values with byte arrays with a Base64 data: URL equivalent. Returns a shallow copy of the dict.  Note: it doesn't descent into nested elements to look for byte arrays.
+
+Use this function to encode byte arrays returned by cryptographic functions.
+
+##### decode_byte_arrays_in_dict( dict )
+
+The opposite operation. Returns a shallow copy of the dict.  It doesn't descent into nested elements to look for encoded byte arrays.
+
+
 
 ## Cryptographic Utilities
 
@@ -221,6 +232,8 @@ const { Crypt_Util } = WebUtil;
 ```
 
 The `disable_extracting` parameter is on all the functions that create a CryptoKey object. If set to `true`, the key may not be exported from memory into JWK. (The web browser uses this for extra protectiong from Cross-Site-Scripting attacks.)
+
+Most functions return byte arrays of type `UInt8Array`. If you need to save the results on the server, you will want to Base64 encode it.  Use helper function `encode_byte_arrays_in_dict` and the corresponding decoding function in the Data utilities above. (You will need to track both the ciphertext byte array as well as the nonce byte array, so place them in a dict and encode it.)
 
 
 
@@ -388,8 +401,7 @@ Because the wrapping function returns a byte array, and you probably want to sen
   var key_ciphertext = await wrap_symmetric_key(kek, wrapping_nonce, key);
   console.log(key_ciphertext.length); // 48 bytes
   
-  // Store key_ciphertext and wrapping_nonce in a public location. 
-  // They are byte arrays, so you may want to base64 encode them.
+  // Store encode_byte_arrays_in_dict({key_ciphertext, wrapping_nonce}) on server.
 
   var key2 = await unwrap_symmetric_key(kek, wrapping_nonce, key_ciphertext);
 
