@@ -19,7 +19,7 @@ Allows to manipulate query parameters of a URL. Parameters are called *options*.
 ```
 
 
-#### decode_url_options(url_query) 
+##### decode_url_options(url_query) 
 
 Returns a dictionary
 
@@ -28,7 +28,7 @@ Returns a dictionary
   console.log(options.c); // d
 ```
 
-#### encode_url_options(dict) 
+##### encode_url_options(dict) 
 
 Returns url query 
 
@@ -37,7 +37,7 @@ Returns url query
   console.log(query); // a=b&c=d
 ```
 
-#### add_option_to_url(url, name, value)
+##### add_option_to_url(url, name, value)
 
 Sets an URL parameter on a URL. 
 
@@ -47,7 +47,7 @@ Sets an URL parameter on a URL.
 ```
 
 
-#### is_url(str)
+##### is_url(str)
 
 Checks if `str` looks like a URL.
 
@@ -57,7 +57,7 @@ Checks if `str` looks like a URL.
 
 Helper functions to work with current page loaded in the browser.
 
-#### linkify(element)
+##### linkify(element)
 
 Use this in order to avoid generating links on the server side. Doing it on client side prevents Cross Site Scripting attacks. Apply this on an element containing only text.
 
@@ -71,7 +71,7 @@ Use this in order to avoid generating links on the server side. Doing it on clie
   </script>
 ```
 
-#### linkify_text(string)
+##### linkify_text(string)
 
 Returns a document fragment in which URLs have been converted into `A` anchor tags with the urls set in the `href` attribute.
 
@@ -82,11 +82,11 @@ Returns a document fragment in which URLs have been converted into `A` anchor ta
   </script>
 ```
 
-#### get_meta(name):
+##### get_meta(name):
 
 Get meta tag of a certain name. Returns the value of the `content` attribute of the meta tag.
 
-#### encode_html_entities(html)
+##### encode_html_entities(html)
 
 Replaces unsafe HTML characters with their safer equivalents.
 
@@ -107,23 +107,23 @@ date.setDate(date.getDate() - 1)
 console.log( Date_Util.time_ago( date, new Date() ) ) // "1 day ago"
 ```
 
-#### short_date(past_date, current_date)
+##### short_date(past_date, current_date)
 
 Format date and time of a date object as consisely as possible, loosing precision when the date is too distant relative to the current date.
 
-#### time_ago(past_date, current_date)
+##### time_ago(past_date, current_date)
 
 Like short_date but shows date in terms of how many days, months, years ago it was.
 
-#### time_remaining_util(future_date, current_date)
+##### time_remaining_util(future_date, current_date)
 
 Opposite of `time_ago`. You can use this to display time remaining until expiration. 
 
-#### date_str_to_epoch("YYYY/MM/DD")
+##### date_str_to_epoch("YYYY/MM/DD")
 
 Takes in a string formatted as above. Gives time in Unix Epoch of a certain date.
 
-#### date_to_epoch(date_obj)
+##### date_to_epoch(date_obj)
 
 Converts JavaScript Date object to Unix epoch time.
 
@@ -139,11 +139,11 @@ const { Rand_Util } = WebUtil;
 console.log( Rand_Util.random_hex_string() ) // f5b2aa71fb6c5e2da20291e6c6047d43
 ```
 
-#### random_bytes(length)
+##### random_bytes(length)
 
 Uses `crypto.getRandomValues` to generate a strong random bytes, and returns it as UInt8Array.
 
-#### random_hex_string(length = 32)
+##### random_hex_string(length = 32)
 
 Uses `crypto.getRandomValues` to generate a strong random string in which every two characters is a hex code. You can get a shorter equivalent string with the same entropy if you "compress" it by hashing it.
 
@@ -157,7 +157,7 @@ Downloading and fetching data
 const { Net_Util } = WebUtil;
 ```
 
-#### fetch_as_byte_array(url, options)
+##### fetch_as_byte_array(url, options)
 
 Calls `fetch` to GET the URL, then formats result as byte array. Returns a Promise.
 
@@ -179,24 +179,24 @@ string.  In particular, JSON Web Keys (JWK) use the Base64-URL encoding to repre
 
 All functions are synchronous.
 
-#### base64_url_encode( base64_string )
+##### base64_url_encode( base64_string )
 
 Takes an already Base64 encoded string, and converts it into Base64-URL encoded
 string. 
 
-#### base64_url_decode( string )
+##### base64_url_decode( string )
 
 Takes an a Base64-URL encoded string, and returns a Base64 encoded string.
 
-#### base64_encode_byte_array( byte_array )
+##### base64_encode_byte_array( byte_array )
 
 Encodes byte array to base64.
 
-#### base64_url_encode_byte_array( byte_array )
+##### base64_url_encode_byte_array( byte_array )
 
 Use this to strigify raw cryptographic material in one function call. 
 
-#### base64_decode_to_byte_array( str )
+##### base64_decode_to_byte_array( str )
 
 Decodes a Base64 encoded string to a Uint8Array.
 
@@ -204,13 +204,21 @@ Decodes a Base64 encoded string to a Uint8Array.
 
 ## Cryptographic Utilities
 
-Cryptographic operations and hashing. All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
+The cryptographic utilities assist you to communicate security over the Internet, and are broken into three parts. 
+
+First, the HMAC utilities are there to allow you to communicate public information with authenticity verification. You may want to use this to communicate things like public keys, email addresses, phone numbers, and cryptocurrency addresses. The information is not secret, but it needs to make to the other side unmodified. 
+
+Second part contains utility functions for a Diffie-Hellman exchange.  Use this to establish a shared secret over insecure communication channel with the other party.  The shared secret can be either used to form an HMAC key, or to form an AES key (or both).  The shared secret is of size 32 bytes, which works for both keys. 
+
+The third part is for symmetric encryption, which uses AES-256 GCM variant. Once you have a shared secret on both sides of communication, use this to encrypt and decrypt information. Every encryption call requires a nonce value which is 12 bytes long. You can use `Rand_Util.random_bytes(12)` to generate it.  You will need to pass this nonce to the other side, together with the ciphertext. 
+
+All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
 
 ```
 const { Crypt_Util } = WebUtil;
 ```
 
-
+The `disable_extracting` parameter is on all the functions that create a CryptoKey object. If set to `true`, the key may not be exported from memory into JWK. (The web browser uses this for extra protectiong from Cross-Site-Scripting attacks.)
 
 
 
@@ -226,25 +234,25 @@ const { Crypt_Util } = WebUtil;
   }
 ```
 
-#### get_hmac_key(byte_array, disable_extracting = false)
+##### get_hmac_key(byte_array, disable_extracting = false)
 
 Expects a byte array of length 32 bytes.  You can get random bytes to use as the input here, using `Rand_Util.random_bytes(32)`.
 
 Returns a Promise of a key object to plug into other HMAC functions.
 
-#### hmac_sign(key, str)
+##### hmac_sign(key, str)
 
 Expects a key and a string. Returns a Promise of HMAC-SHA256 signature inside a byte array.
 
-#### hmac_sign_byte_array(key, data)
+##### hmac_sign_byte_array(key, data)
 
 Like above, but takes a byte array instead of a string. 
 
-#### hmac_verify(key, signature, string)
+##### hmac_verify(key, signature, string)
 
 Verifies an HMAC signature against another string.
 
-#### hmac_verify_byte_array(key, signature, byte_array)
+##### hmac_verify_byte_array(key, signature, byte_array)
 
 Like above, but takes a byte array instead of a string.
 
@@ -282,12 +290,12 @@ because the public keys are long.
   console.log(session_raw2);
 ```
 
-#### get_dh_key(jwk, disable_extracting = false)
+##### get_dh_key(jwk, disable_extracting = false)
 
 Takes a JSON Web Key received from somewhere, and returns an ECDH CryptoKey object for use with 
 other ECDH functions. Returns a Promise.
 
-#### generate_dh_keypair(disable_extracting = false)
+##### generate_dh_keypair(disable_extracting = false)
 
 Generates a new ECDH private and public key, returning a dict `{ privateKey: ..., publicKey: ... }` where the values are CryptoKey objects. Returns a Promise.
 
@@ -333,40 +341,40 @@ Recall that the `session_raw` value in the ECDH example was returned by the `der
 
 
 
-#### symmetric_encrypt(key, nonce, string)
+##### symmetric_encrypt(key, nonce, string)
 
 Encrypts a string with AES-256 GCM encryption, using the provided `nonce` as
 initialization vection (the `iv` parameter). The key must be AES-256 GCM CryptoKey object. Returns a Promise.
 
-#### symmetric_decrypt(key, nonce, byte_array)
+##### symmetric_decrypt(key, nonce, byte_array)
 
 Like above, but decrypts and returns a string. Use only if you expect that the plaintext is a string, 
 and not a raw binary data.
 
-#### symmetric_encrypt_byte_array(key, nonce, byte_array)
+##### symmetric_encrypt_byte_array(key, nonce, byte_array)
 
 Like `symmetric_encrypt` function, but takes a byte array.
 
-#### symmetric_decrypt_byte_array(key, nonce, byte_array)
+##### symmetric_decrypt_byte_array(key, nonce, byte_array)
 
 Like `symmetric_decrypt` function, but returns a byte array instead of a string.
 Use this if you expect some kind of large data coming out of the decryption.
 
-#### get_symmetric_key(disable_extracting = false)
+##### get_symmetric_key(disable_extracting = false)
 
 Takes a JSON Web Key (JWK) as input, and returns an equivalent AES-GCM CryptoKey object.
 
-#### get_symmetric_key_from_string(disable_extracting = false)
+##### get_symmetric_key_from_string(disable_extracting = false)
 
 Like above, but only takes in the value for the `k` field in a JSON Web Key (JWK) data structure, and hardcodes the rest accoring to AES-256 GCM.  
 
 You can produce this value from a random set of 32 bytes, by first encoding it using Base64-URL encoding. You can use `Data_Util.base64_url_encode_byte_array` utility function to do it.
 
-#### generate_symmetric_key(disable_extracting = false)
+##### generate_symmetric_key(disable_extracting = false)
 
 Helper function to generate a new CryptoKey of type AES-256 GCM.
 
-#### get_jwk(key)
+##### get_jwk(key)
 
 Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise. 
 Use this for sending a key over the network.
