@@ -411,7 +411,7 @@ Helper function to generate a new CryptoKey of type AES-256 GCM.
 
 ### Wrapping Keys
 
-Wrapping keys with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a large file with a key A once and send to multiple people. All you need to do is to encrypt or "wrap" the key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the file. Then you send to each person the message ciphertext, as well as the wrap of the key he will need to decrypt the message. (But first he would have to unwrap the key.)
+Wrapping keys with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a large file with a key A once and send to multiple people. All you need to do is to encrypt or "wrap" the key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the file. Then you send to each person the encrypted file, as well as the wrap of the key he will need to decrypt the the file. (But first he would have to unwrap the key.)
 
 Because the wrapping function returns a byte array, and you probably want to send it to the server, you will need to base64 encode it.  Remember that you will need to store the nonce as well, which is also a byte array.
 
