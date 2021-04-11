@@ -212,6 +212,8 @@ Second part contains utility functions for a Diffie-Hellman exchange.  Use this 
 
 The third part is for symmetric encryption, which uses AES-256 GCM variant. Once you have a shared secret on both sides of communication, use this to encrypt and decrypt information. Every encryption call requires a nonce value which is 12 bytes long. You can use `Rand_Util.random_bytes(12)` to generate it.  You will need to pass this nonce to the other side, together with the ciphertext. 
 
+Part of symmetric encrytion is also the ability to treat keys as data and encrypt them with another key. This second key is called Key Encryption Key (KEK). The terminology is to wrap and unwrap a key. When the key is wrapped, it can be communicated by an insecure channel. The technique of wrapping keys allows to encrypt a large file once, and send it to multiple people, each of which do not know each other's symmetric key.
+
 All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
 
 ```
@@ -369,6 +371,44 @@ You can produce this value from a random set of 32 bytes, by first encoding it u
 
 Helper function to generate a new CryptoKey of type AES-256 GCM.
 
+
+
+### Wrapping Keys
+
+Wrapping keys with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a message with a key A once and send to multiple people. All you need to do is to encrypt or "wrap" the key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the message. Then you send to each person the message ciphertext, as well as the wrap of the key he will need to decrypt the message. But first he would have to unwrap the key.
+
+Because the wrapping function returns a byte array, and you probably want to send it to the server, you will need to base64 encode it.  Remember that you will need to store the nonce as well, which is also a byte array.
+
+
+```
+  const { wrap_symmetric_key, unwrap_symmetric_key } = WebUtil.Crypt_Util;
+
+  var kek = await generate_symmetric_key();
+  var wrapping_nonce = await Rand_Util.random_bytes(12);
+  var key_ciphertext = await wrap_symmetric_key(kek, wrapping_nonce, key);
+  console.log(key_ciphertext.length); // 48 bytes
+  
+  // Store key_ciphertext and wrapping_nonce in a public location. 
+  // They are byte arrays, so you may want to base64 encode them.
+
+  var key2 = await unwrap_symmetric_key(kek, wrapping_nonce, key_ciphertext);
+
+  var plaintext = await symmetric_decrypt(key2, nonce, ciphertext);
+  if (plaintext == "hello world"){
+    console.log("valid");
+  }
+}
+```
+
+##### wrap_symmetric_key(wrapping_key, nonce, key_to_wrap)
+
+Both keys must be of type CryptoKey.  Returns ciphertext as a byte array, as a Promise.
+
+##### unwrap_symmetric_key(unwrapping_key, nonce, ciphertext, disable_extracting = false)
+
+The opposite operation. The `ciphertext` is the output of the wrapping function. (And the nonce must be the same.) Returns the original CryptoKey as a Promise.
+
 ##### get_jwk(key)
 
 Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise.  Use this for sending a key over the network.
+

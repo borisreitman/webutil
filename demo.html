@@ -75,7 +75,7 @@
 
       // the Base64-URL encoded ECDH established shared_secret from above should work as an AES key
       var key = await get_symmetric_key_from_string(shared_secret);
-      var key = await generate_symmetric_key();
+      //var key = await generate_symmetric_key();
 
       var nonce = await Rand_Util.random_bytes(12);
       var ciphertext = await symmetric_encrypt(key, nonce, "hello world")
@@ -83,6 +83,26 @@
       // send nonce and ciphertext over the network
 
       var plaintext = await symmetric_decrypt(key, nonce, ciphertext);
+      if (plaintext == "hello world"){
+        console.log("valid");
+      }
+
+
+      // Key-encryption-Key (KEK)
+
+      const { wrap_symmetric_key, unwrap_symmetric_key } = WebUtil.Crypt_Util;
+
+      var kek = await generate_symmetric_key();
+      var wrapping_nonce = await Rand_Util.random_bytes(12);
+      var key_ciphertext = await wrap_symmetric_key(kek, wrapping_nonce, key);
+      console.log(key_ciphertext.length); // 48 bytes
+      
+      // Store key_ciphertext and wrapping_nonce in a public location. 
+      // They are byte arrays, so you may want to base64 encode them.
+
+      var key2 = await unwrap_symmetric_key(kek, wrapping_nonce, key_ciphertext);
+
+      var plaintext = await symmetric_decrypt(key2, nonce, ciphertext);
       if (plaintext == "hello world"){
         console.log("valid");
       }

@@ -161,6 +161,42 @@ WebUtil.Crypt_Util=(function(){
   }
 
 
+  // Wrapping and Unwrapping keys
+
+  function wrap_symmetric_key(wrapping_key, nonce, key_to_wrap){
+    return crypto_subtle.wrapKey(
+      "raw", //can be "jwk", "raw", "spki", or "pkcs8"
+      key_to_wrap,
+      wrapping_key, //the AES-GCM key with "wrapKey" usage flag
+      {   //these are the wrapping key's algorithm options
+          name: "AES-GCM",
+          iv: nonce,
+          tagLength: 128,
+      }
+    ).then(function(wrapped){
+      return new Uint8Array(wrapped);
+    });
+  }
+
+	function unwrap_symmetric_key(unwrapping_key, nonce, ciphered_key, disable_extracting){ // unwrapping_key is CryptoKey type
+		return crypto_subtle.unwrapKey(
+			"raw", //can be "jwk", "raw", "spki", or "pkcs8"
+			ciphered_key.buffer,
+			unwrapping_key, //the AES-GCM key with "wrapKey" usage flag
+			{   //these are the wrapping key's algorithm options
+					name: "AES-GCM",
+					iv: nonce,
+					tagLength: 128
+			},
+			{   //this what you want the wrapped key to become (same as when wrapping)
+					name: "AES-GCM",
+					length: 256
+			},
+			!disable_extracting, 
+			["encrypt", "decrypt", "wrapKey", "unwrapKey"]
+		)
+	}
+
   return {
     get_jwk,
 
@@ -183,7 +219,10 @@ WebUtil.Crypt_Util=(function(){
     symmetric_decrypt_byte_array,
     get_symmetric_key_from_string,
     get_symmetric_key,
-    generate_symmetric_key
+    generate_symmetric_key,
+
+    wrap_symmetric_key,
+    unwrap_symmetric_key
 
   };
 })();
