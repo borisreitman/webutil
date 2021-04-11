@@ -1,7 +1,7 @@
 # webutil
 Web Development utilities
 
-Contains various groupings of functions to achieve common tasks in web development.
+Contains various groupings of functions to achieve common tasks in web development. Note that the separate modules have no cross dependencies. 
 
 
 
