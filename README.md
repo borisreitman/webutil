@@ -11,7 +11,7 @@ Brief summary of utility groups:
 
 * URL utilities -- parsing of URL parameters
 * HTML utilities - DOM manipulation, escaping special characters, etc.
-* Date utilities - show dates in a userfriendly consise way (e.g. "1 day ago")
+* Date utilities - show dates in a user friendly consise way (e.g. "1 day ago")
 * Randomization utilities -- random strings and random bytes
 * Network utilities -- fetching remote resources
 * Data utilities -- serialization and deserialization of byte arrays
@@ -96,9 +96,9 @@ Returns a document fragment in which URLs have been converted into `A` anchor ta
   </script>
 ```
 
-##### get_meta(name):
+##### get_meta(name)
 
-Get meta tag of a certain name. Returns the value of the `content` attribute of the meta tag.
+Get a meta tag of a certain name. Returns the value of the `content` attribute of the meta tag.
 
 ##### encode_html_entities(html)
 
@@ -108,7 +108,7 @@ Replaces unsafe HTML characters with their safer equivalents.
 
 ## Date Utilities
 
-Function that helps to present dates to end user
+Functions that help present dates to end user in a concise, easily understoond way.
 
 The `current_date` parameter should be set to current time `new Date()`. It's left configurable for unit testing purposes.
 
@@ -188,8 +188,7 @@ var bytes = await Net_Util.fetch_as_byte_array( url, {
 
 Various data format conversions.  Use these functions to encode raw binary data, such as raw cryptogarphic keys, if you need to send them over the network.
 
-Note that there is a difference between Base64 encoded string, and a  Base64-URL encoded string.
-string.  In particular, JSON Web Keys (JWK) use the Base64-URL encoding to represent keys (the `k` field).
+Note that there is a difference between Base64 encoded string, and a  Base64-URL encoded string.  In particular, JSON Web Keys (JWK) use the Base64-URL encoding to represent keys.
 
 All functions are synchronous.
 
@@ -233,19 +232,19 @@ The opposite operation. Returns a shallow copy of the dict.  It doesn't descent 
 const { Crypt_Util } = WebUtil;
 ```
 
-The cryptographic utilities assist you to communicate security over the Internet, and are broken into three parts. 
+The cryptographic utilities assist you to communicate securely over the Internet. The web browser supports cryptographic operations natively, and uses the `CryptoKey` class to represent encryption keys of various types. While we may prefer working with cryptographic keys as strings or byte arrays, we must eventually intialize a CryptoKey object instance with the key material.
 
-First, the HMAC utilities are there to allow you to communicate public information with authenticity verification. You may want to use this to communicate things like public keys, email addresses, phone numbers, and cryptocurrency addresses. The information is not secret, but it needs to make to the other side unmodified. 
+The cryptographic utilities are organized into three parts. First, the HMAC utilities are there to allow you to communicate public information with authenticity verification. You may want to use this to communicate things like public keys, email addresses, phone numbers, and cryptocurrency addresses. The information is not secret, but it needs to arrive at the recipient's side unmodified. 
 
-Second part contains utility functions for a Diffie-Hellman exchange.  Use this to establish a shared secret over insecure communication channel with the other party.  The shared secret can be either used to form an HMAC key, or to form an AES key (or both).  The shared secret is of size 32 bytes, which works for both keys. 
+Second part contains utility functions for a Diffie-Hellman exchange.  Use this to establish a shared secret over insecure communication channel with the other party.  Once the shared secret is established, it can be either used to form an HMAC key or an AES key.  Because the shared secret is of size 32 bytes, it both works for both kinds of keys. Note that the Diffie-Hellman scheme is an instance of an assymetric encryption scheme.
 
-The third part is for symmetric encryption, which uses AES-256 GCM variant. Once you have a shared secret on both sides of communication, use this to encrypt and decrypt information. Every encryption call requires a nonce value which is 12 bytes long. You can use `Rand_Util.random_bytes(12)` to generate it.  You will need to pass this nonce to the other side, together with the ciphertext. 
+The third part is for symmetric encryption which uses AES-256 GCM variant. Once you have a shared secret on both sides of communication, use this to encrypt and decrypt information. Note that every encryption call requires a nonce value which is 12 bytes long. You can use `Rand_Util.random_bytes(12)` to generate it.  You will need to pass this nonce to the other side, together with the ciphertext. 
 
-Part of symmetric encrytion is also the ability to treat keys as data and encrypt them with another key. This second key is called a Key Encryption Key (KEK), and the further terminology is to *wrap* and *unwrap* a key. When the key is wrapped, it can be communicated by an insecure channel. The technique of wrapping keys allows to encrypt a large file once, and send it to multiple people, each of whom do not know each other's symmetric key.
+Part of symmetric encrytion pracitce is also the ability to treat keys as data and encrypt them with another key. This second key is called a Key Encryption Key (KEK), and the further terminology is to *wrap* and *unwrap* a key. When the key is wrapped, it can be communicated by an insecure channel. The technique of wrapping keys allows to encrypt a large file once, and send it to multiple people, each of whom do not know each other's symmetric key.
 
 The `disable_extracting` parameter is on all the functions that create a CryptoKey object. If set to `true`, the key may not be exported from memory into JWK. (The web browser uses this for extra protectiong from Cross-Site-Scripting attacks.)
 
-All cryptogarphic operations are performed using Brower's built-in facilities of the `window.crypto` API.  Most functions return byte arrays of type `UInt8Array`. If you need to save the results on the server, you will want to Base64 encode it.  Use helper function `encode_byte_arrays_in_dict` and the corresponding decoding function in the Data utilities above. (You will need to track both the ciphertext byte array as well as the nonce byte array, so place them in a dict and encode it.)
+All cryptographic operations are performed using Brower's built-in facilities of the `window.crypto` API.  Most functions return byte arrays of type `UInt8Array`. If you need to save the results on the server, you will want to Base64 encode it.  Use helper function `encode_byte_arrays_in_dict` and the corresponding decoding function in the Data utilities above. (You will need to track both the ciphertext byte array as well as the nonce byte array, so place them in a dict and encode it.)
 
 
 ### HMAC Signatures
