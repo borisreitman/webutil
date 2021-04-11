@@ -57,7 +57,7 @@ Checks if `str` looks like a URL.
 
 Helper functions to work with current page loaded in the browser.
 
-## linkify(element)
+#### linkify(element)
 
 Use this in order to avoid generating links on the server side. Doing it on client side prevents Cross Site Scripting attacks. Apply this on an element containing only text.
 
@@ -71,7 +71,7 @@ Use this in order to avoid generating links on the server side. Doing it on clie
   </script>
 ```
 
-## linkify_text(string)
+#### linkify_text(string)
 
 Returns a document fragment in which URLs have been converted into `A` anchor tags with the urls set in the `href` attribute.
 
@@ -201,6 +201,7 @@ Use this to strigify raw cryptographic material in one function call.
 Decodes a Base64 encoded string to a Uint8Array.
 
 
+
 ## Cryptographic Utilities
 
 Cryptographic operations and hashing. All byte arrays are of type UInt8Array.  All cryptogarphic are performed using Brower's built-in facilities of the `window.crypto` API.
@@ -211,9 +212,11 @@ const { Crypt_Util } = WebUtil;
 
 
 
-#### HMAC signatures
 
-```
+
+### HMAC Signatures
+
+```javascript
   const { hmac_sign, hmac_verify, get_hmac_key } = WebUtil.Crypt_Util;
   var raw = Rand_Util.random_bytes(32);
   var key = await get_hmac_key(raw);
@@ -222,78 +225,6 @@ const { Crypt_Util } = WebUtil;
     console.log("verified");
   }
 ```
-
-
-
-#### Elliptic Curve Diffie-Hellman exchange (ECDH)
-
-Uses ECDH with the browser built-in elliptic curve `P-256`.
-
-Note that all the functions are named `_dh_` but in fact they are doing ECDH. 
-Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation 
-because the public keys are long.
-
-```
-  const { generate_dh_keypair, derive_dh_session, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
-  // Alice does
-  var alice_keypair = await generate_dh_keypair();
-  var alice_pubkey_jwk = await get_jwk(alice_keypair.publicKey);
-
-  // Send Alice's pub key to Bob
-  // Bob does
-  var bob_keypair = await generate_dh_keypair();
-  var bob_pubkey_jwk = await get_jwk(bob_keypair.publicKey);
-
-  var alice_pubkey = await get_dh_key(alice_pubkey_jwk);
-  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
-
-  // Send Bob's pub key to Alice
-  // Alice does
-  var bob_pubkey = await get_dh_key(bob_pubkey_jwk);
-  var session_raw2 = await derive_dh_session(alice_keypair.privateKey, bob_pubkey)
-
-  // both should be equal
-  console.log(session_raw);
-  console.log(session_raw2);
-```
-
-## Symmetric Encryption
-
-Uses AES-256 GCM to do the encryption, with tag length of 128.
-
-```
-  const { symmetric_encrypt, generate_symmetric_key, symmetric_decrypt } = WebUtil.Crypt_Util;
-
-  var key = await generate_symmetric_key();
-
-  var nonce = await Rand_Util.random_bytes(12);
-  var ciphertext = await symmetric_encrypt(key, nonce, "hello world")
-
-  // send nonce and ciphertext over the network
-
-  var plaintext = await symmetric_decrypt(key, nonce, ciphertext);
-  if (plaintext == "hello world"){
-    console.log("valid");
-  }
-```
-
-### Combining ECDH with symmetric encryption
-
-Use the `get_symmetric_key_from_string` to create a key from the ECDH
-established session string. Recall that the session string is a Base64-URL
-encoding of the shared bytes returned by the `derive_dh_session()` function.
-The shared bytes are precisely the right length for the AES-256 key, and the
-Base64-URL encoding is what a JSON Web Key needs in the `k` field.
-
-```
-  const { get_symmetric_key_from_string } = WebUtil.Crypt_Util;
-
-  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
-  var session = base64_url_encode_byte_array(session_raw);
-
-  var key = await get_symmetric_key_from_string(session);
-```
-
 
 #### get_hmac_key(byte_array, disable_extracting = false)
 
@@ -317,10 +248,39 @@ Verifies an HMAC signature against another string.
 
 Like above, but takes a byte array instead of a string.
 
-#### get_jwk(key)
 
-Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise. 
-Use this for sending a key over the network.
+
+### Elliptic Curve Diffie-Hellman (ECDH) Exchange
+
+Uses ECDH with the browser built-in elliptic curve `P-256`.
+
+Note that all the functions are named `_dh_` but in fact they are doing ECDH. 
+Usually DH means RSA based exchange however RSA  is not desirable for a shared secret negotiation 
+because the public keys are long.
+
+```javascript
+  const { generate_dh_keypair, derive_dh_session, get_dh_key, get_jwk } = WebUtil.Crypt_Util;
+  // Alice does
+  var alice_keypair = await generate_dh_keypair();
+  var alice_pubkey_jwk = await get_jwk(alice_keypair.publicKey);
+
+  // Send Alice's pub key to Bob
+  // Bob does
+  var bob_keypair = await generate_dh_keypair();
+  var bob_pubkey_jwk = await get_jwk(bob_keypair.publicKey);
+
+  var alice_pubkey = await get_dh_key(alice_pubkey_jwk);
+  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
+
+  // Send Bob's pub key to Alice
+  // Alice does
+  var bob_pubkey = await get_dh_key(bob_pubkey_jwk);
+  var session_raw2 = await derive_dh_session(alice_keypair.privateKey, bob_pubkey)
+
+  // both should be equal
+  console.log(session_raw);
+  console.log(session_raw2);
+```
 
 #### get_dh_key(jwk, disable_extracting = false)
 
@@ -330,6 +290,47 @@ other ECDH functions. Returns a Promise.
 #### generate_dh_keypair(disable_extracting = false)
 
 Generates a new ECDH private and public key, returning a dict `{ privateKey: ..., publicKey: ... }` where the values are CryptoKey objects. Returns a Promise.
+
+
+
+### Symmetric Encryption
+
+Uses AES-256 GCM to do the encryption, with tag length of 128.
+
+```javascript
+  const { symmetric_encrypt, generate_symmetric_key, symmetric_decrypt } = WebUtil.Crypt_Util;
+
+  var key = await generate_symmetric_key();
+
+  var nonce = await Rand_Util.random_bytes(12);
+  var ciphertext = await symmetric_encrypt(key, nonce, "hello world")
+
+  // send nonce and ciphertext over the network
+
+  var plaintext = await symmetric_decrypt(key, nonce, ciphertext);
+  if (plaintext == "hello world"){
+    console.log("valid");
+  }
+```
+
+
+
+### Combining ECDH with symmetric encryption
+
+Use the `get_symmetric_key_from_string` function to create a key from the ECDH established session string. 
+
+Recall that the `session_raw` value in the ECDH example was returned by the `derive_dh_session()` function. The shared bytes are precisely the right length for the AES-256 key (namely 32 bytes), and the Base64-URL encoding is what a JSON Web Key needs in the `k` field.
+
+```javascript
+  const { get_symmetric_key_from_string } = WebUtil.Crypt_Util;
+
+  var session_raw = await derive_dh_session(bob_keypair.privateKey, alice_pubkey)
+  var session = base64_url_encode_byte_array(session_raw);
+
+  var key = await get_symmetric_key_from_string(session);
+```
+
+
 
 
 #### symmetric_encrypt(key, nonce, string)
@@ -364,3 +365,8 @@ You can produce this value from a random set of 32 bytes, by first encoding it u
 #### generate_symmetric_key(disable_extracting = false)
 
 Helper function to generate a new CryptoKey of type AES-256 GCM.
+
+#### get_jwk(key)
+
+Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise. 
+Use this for sending a key over the network.
