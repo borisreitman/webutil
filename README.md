@@ -350,7 +350,7 @@ Uses AES-256 GCM to do the encryption, with tag length of 128.
 
 ### Combining ECDH with symmetric encryption
 
-Use the `get_symmetric_key_from_string` or `get_symmetric_key_from_byte_array` functions to create a key from the ECDH established shared_secret string. 
+Use the `get_symmetric_key_from_string` or `get_symmetric_key_from_byte_array` functions to create a key from the ECDH established shared secret.
 
 You will most likely store the shared secret somewhere in browser session storage as string, so using the `..._from_string` variant will be more convenient.
 
@@ -358,6 +358,7 @@ Recall that the `shared_secret_raw` value in the ECDH example was returned by th
 
 ```javascript
   const { get_symmetric_key_from_string } = WebUtil.Crypt_Util;
+  const { base64_url_encode_byte_array } = WebUtil.Data_Util;
 
   var shared_secret_raw = await derive_dh_shared_secret(bob_keypair.privateKey, alice_pubkey)
   var shared_secret = base64_url_encode_byte_array(shared_secret_raw);
@@ -369,11 +370,11 @@ Recall that the `shared_secret_raw` value in the ECDH example was returned by th
 
 ##### symmetric_encrypt(key, nonce, string)
 
-Encrypts a string with AES-256 GCM encryption, using the provided `nonce` as initialization vection (the `iv` parameter). The key must be AES-256 GCM CryptoKey object. Returns a Promise.
+Encrypts a string with AES-256 GCM encryption, using the provided `nonce` as initialization vector (the `iv` parameter). The key must be AES-256 GCM CryptoKey object. Returns a Promise.
 
 ##### symmetric_decrypt(key, nonce, byte_array)
 
-Like above, but decrypts and returns a string. Use only if you expect that the plaintext is a string, and not a raw binary data.
+Like above, but decrypts and returns a string. Use only if you expect that the plaintext is a string, rather than raw binary data.
 
 ##### symmetric_encrypt_byte_array(key, nonce, byte_array)
 
@@ -411,9 +412,9 @@ Helper function to generate a new CryptoKey of type AES-256 GCM.
 
 ### Wrapping Keys
 
-Wrapping keys with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a large file with a key A once and send to multiple people. All you need to do is to encrypt or "wrap" the key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the file. Then you send to each person the encrypted file, as well as the wrap of the key he will need to decrypt the the file. (But first he would have to unwrap the key.)
+Wrapping a key with another key, known as Key-Encryption-Key (KEK), allows you to encrypt a large file with a key once and send to multiple people. All you need to do is to encrypt or "wrap" the encryption key A with keys B1, B2, B3, corresponding to person 1, person 2, person 3 who should have access to the file. Then you send to each person the encrypted file, as well as the wrap `Wrap(A,B_i)` of the key he will need to decrypt the file. On the receiving end, the person will unwrap A using B_i and decrypt the file.
 
-Because the wrapping function returns a byte array, and you probably want to send it to the server, you will need to base64 encode it.  Remember that you will need to store the nonce as well, which is also a byte array.
+Because the wrapping function returns a byte array but you would most likely wish to send it to the server, you would need to base64 encode it.  Remember that you will need to store the nonce as well, which is also a byte array.
 
 
 ```
