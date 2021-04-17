@@ -214,6 +214,12 @@ Use this to strigify raw cryptographic material in one function call.
 
 Decodes a Base64 encoded string to a Uint8Array.
 
+##### base64_url_decode_to_byte_array( str )
+
+Like above, but assumes input is in Base64 URL encoding.
+
+Decodes a Base64 encoded string to a Uint8Array.
+
 
 ##### encode_byte_arrays_in_dict( dict )
 
