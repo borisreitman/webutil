@@ -2,7 +2,14 @@
 <div id="$foo">
   Go to https://example.com 
 </div>
+<style>
+a { display: block }
+button { display: block }
+</style>
+<a id="$download">download test</a>
 <script>
+    var _test_blob;
+
     async function demo(){
       var { Rand_Util } = WebUtil;
       console.log( Rand_Util.random_hex_string() );
@@ -119,12 +126,22 @@
       
       package = decode_byte_arrays_in_dict(package);
       console.log(package);
+
+      // Html Util -- download
+      const { prepare_download_link, 
+        create_blob_from_dict, 
+        create_blob_from_byte_array } = WebUtil.HTML_Util;
+
+      var data = {'a':1,'b':2};
+      var blob = create_blob_from_dict(data);
+      prepare_download_link(blob, 'foo.txt', $download)
     }
   </script>
   <script src="./rand_util.js"></script>
   <script src="./url_util.js"></script>
   <script src="./html_util.js"></script>
   <script src="./date_util.js"></script>
+  <script src="./data_util.js"></script>
   <script src="./net_util.js"></script>
   <script src="./crypt_util.js"></script>
   <script src="./data_util.js"></script>

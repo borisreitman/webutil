@@ -84,6 +84,13 @@ WebUtil.Data_Util=(function(){
     return copy;
   }
 
+  function string_to_byte_array(str, encoding) {
+    if (!encoding){
+      encoding = 'utf-8';
+    }
+    return new TextEncoder(encoding).encode(str);
+  }
+
   return {
     base64_url_encode,
     base64_url_decode,
@@ -92,6 +99,7 @@ WebUtil.Data_Util=(function(){
     base64_decode_to_byte_array,
     base64_url_decode_to_byte_array,
     encode_byte_arrays_in_dict,
-    decode_byte_arrays_in_dict
+    decode_byte_arrays_in_dict,
+    string_to_byte_array
   };
 })();

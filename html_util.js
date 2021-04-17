@@ -78,10 +78,58 @@ WebUtil.HTML_Util=(function(){
     return encoded_str;
   }
 
+  function trigger_download(link_element){
+    link_element.click();
+  }
+
+  function prepare_download_link(blob, filename, link_element){
+    if (!link_element){
+      link_element = document.createElement('a');
+      link_element.className = 'blob_download_link';
+      link_element.style.display = 'none';
+      link_element.rel = 'noopener'; // protection from tab nabbing
+      document.body.appendChild(link_element);
+    }
+    link_element.href = window.URL.createObjectURL(blob);
+    link_element.setAttribute('download', filename||'');
+    return link_element;
+  }
+
+  function click_link(node){ // from FileSave.js
+    // `a.click()` doesn't work for all browsers (#465)
+		try {
+			node.dispatchEvent(new MouseEvent('click'))
+		} catch (e) {
+			var evt = document.createEvent('MouseEvents')
+			evt.initMouseEvent('click', true, true, window, 0, 0, 0, 80,
+														20, false, false, false, false, 0, null)
+			node.dispatchEvent(evt)
+		}
+  }
+
+  function create_blob_from_byte_array(byte_array, media_type){
+    return new Blob([byte_array], {type: media_type || 'application/octet-stream'})
+  }
+
+  function create_blob_from_string(str, media_type){
+    return new Blob([str], {type: media_type || 'text/plain'})
+  }
+
+  function create_blob_from_dict(dict, media_type){
+    return new Blob([JSON.stringify(dict)], {type: media_type || 'application/json;charset=utf-8'})
+  }
+
+
   return {
     linkify,
     linkify_text,
     get_meta: get_meta,
     encode_html_entities,
+
+    prepare_download_link,
+		click_link,
+    create_blob_from_byte_array,
+    create_blob_from_string,
+    create_blob_from_dict,
   };
 })();

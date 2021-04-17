@@ -105,6 +105,37 @@ Get a meta tag of a certain name. Returns the value of the `content` attribute o
 
 Replaces unsafe HTML characters with their safer equivalents.
 
+##### create_blob_from_string(string, content_type = "plain/text;charset=utf-8")
+
+Wrapper on Blob constructor.
+
+##### create_blob_from_byte_array(byte_array, content_type = "application/octet-stream")
+
+Wrapper on Blob constructor.
+
+##### create_json_blob(dict, content_type = "application/json;charset=utf-8")
+
+Wrapper on Blob constructor. Creates a Blob containing a JSON string, after serializing the `dict ` with `JSON.stringify`.
+
+##### prepare_download_link(blob, filename = null, link_element = null)
+
+Initializes a link element with attributes which would trigger a file download, when the link is clicked. If the link element is not passed, a new invisible element is created and appended to the end of the page. 
+
+Returns the link element. 
+
+The filename is optional, and will result in adding the `download` attribute to the link tag set to the filename. Otherwise, the browser will pick a filename itself. 
+
+To trigger the download programmatically, call `click_link( element )` function.
+
+Note: The Blob object must have a content type set on it.
+
+Note: No "Save As" dialog would be presented. If you want it, use the <a href="https://github.com/eligrey/FileSaver.js">FileSaver.js</a> library by Eli Grey until browsers implement `window.saveAs( blob, filename )` function from HTML5.
+
+##### click_link(link_element)
+
+Use with links returned by `prepare_download_link`.  Equivalent to `a.click()` but works in all browers to trigger download.
+
+
 
 
 ## Date Utilities
@@ -231,6 +262,10 @@ Use this function to encode byte arrays returned by cryptographic functions.
 
 The opposite operation. Returns a shallow copy of the dict.  It doesn't descent into nested elements to look for encoded byte arrays.
 
+
+##### string_to_byte_array( string, encoding = 'utf-8' )
+
+Takes a string and returns a byte array that represents it.
 
 
 ## Cryptographic Utilities
