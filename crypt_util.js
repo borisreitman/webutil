@@ -60,14 +60,14 @@ WebUtil.Crypt_Util=(function(){
 
   // ECDH
 
-  function get_dh_key(dh_public_key_jwk, disable_extracting) {
-    return crypto.subtle.importKey("jwk", dh_public_key_jwk,
+  function get_dh_key(jwk, disable_extracting) {
+    return crypto.subtle.importKey("jwk", jwk,
       {
           name: "ECDH",
           namedCurve: "P-256",
       },
       !disable_extracting,
-      [] //"deriveKey" and/or "deriveBits" for private keys only (empty list if importing a public key)
+      jwk.key_ops //"deriveKey" and/or "deriveBits" for private keys only (empty list if importing a public key)
     );
   }
 

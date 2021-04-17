@@ -108,15 +108,16 @@ WebUtil.HTML_Util=(function(){
   }
 
   function create_blob_from_byte_array(byte_array, media_type){
-    return new Blob([byte_array], {type: media_type || 'application/octet-stream'})
+    return new Blob(byte_array, {type: media_type || 'application/octet-stream'})
   }
 
   function create_blob_from_string(str, media_type){
     return new Blob([str], {type: media_type || 'text/plain'})
   }
 
-  function create_blob_from_dict(dict, media_type){
-    return new Blob([JSON.stringify(dict)], {type: media_type || 'application/json;charset=utf-8'})
+  function create_blob_from_dict(dict, formatted, media_type){
+    var json = formatted ? JSON.stringify(dict, null, 1) : JSON.stringify(dict);
+    return new Blob([json], {type: media_type || 'application/json;charset=utf-8'})
   }
 
 
