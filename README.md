@@ -113,7 +113,7 @@ Wrapper on Blob constructor.
 
 Wrapper on Blob constructor.
 
-##### create_json_blob(dict, content_type = "application/json;charset=utf-8")
+##### create_blob_from_dict(dict, content_type = "application/json;charset=utf-8")
 
 Wrapper on Blob constructor. Creates a Blob containing a JSON string, after serializing the `dict ` with `JSON.stringify`.
 
