@@ -51,6 +51,10 @@ WebUtil.Data_Util=(function(){
 		return Uint8Array.from(atob(str), c => c.charCodeAt(0))
 	}
 
+	function base64_url_decode_to_byte_array(str) {
+		return base64_decode_to_byte_array( base64_url_decode(str) );
+	}
+
   const _BASE64_PACK_PREFIX="data:;base64,";
   
   function encode_byte_arrays_in_dict(dict){
@@ -86,6 +90,7 @@ WebUtil.Data_Util=(function(){
     base64_encode_byte_array,
     base64_url_encode_byte_array,
     base64_decode_to_byte_array,
+    base64_url_decode_to_byte_array,
     encode_byte_arrays_in_dict,
     decode_byte_arrays_in_dict
   };
