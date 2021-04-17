@@ -17,7 +17,7 @@ Brief summary of utility groups:
 * Data utilities -- serialization and deserialization of byte arrays
 * Cryptographic utilities -- encrypt and decrypt in the browser, when not trusting the server.
 
-See <a href="https://borisreitman.com/privacy.html">external demo</a>.
+See external <a href="https://borisreitman.com/privacy.html">cryptography demo</a>.
 
 
 ## URL Utilities
