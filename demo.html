@@ -135,6 +135,22 @@ button { display: block }
       var data = {'a':1,'b':2};
       var blob = create_blob_from_dict(data);
       prepare_download_link(blob, 'foo.txt', $download)
+
+      // big numbers
+      // NIST P-256 (secp256r1) 2^256 - 2^224 + 2^192 + 2^96 - 1
+      const _2 = BigInt(2), _256 = BigInt(256), _224 = BigInt(224), _192 = BigInt(192), _96 = BigInt(96), _1 = BigInt(1);
+      const prime = _2**_256 - _2**_224 + _2**_192 + _2**_96 - _1;
+      console.log("prime: ", prime);
+
+      const { bigint_to_byte_array, byte_array_to_bigint,
+        byte_array_to_hex, hex_to_byte_array } = WebUtil.Data_Util;
+      console.log(bigint_to_byte_array('123456789012345678901234567890'));
+      console.log(bigint_to_byte_array(prime));
+      console.log("prime: ", byte_array_to_bigint(bigint_to_byte_array(prime)));
+      console.log(byte_array_to_hex(bigint_to_byte_array(prime)));
+      console.log(hex_to_byte_array(byte_array_to_hex(bigint_to_byte_array(prime))));
+      
+
     }
   </script>
   <script src="./rand_util.js"></script>

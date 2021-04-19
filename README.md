@@ -267,6 +267,24 @@ The opposite operation. Returns a shallow copy of the dict.  It doesn't descent 
 
 Takes a string and returns a byte array that represents it.
 
+##### hex_to_byte_array( hex_string )
+
+If the hex string is not of even length, it will first left-pad it with a zero.
+Then it will convert every two characters to a byte, and stuff it into a byte
+array of half the length of the original hex string.
+
+##### byte_array_to_hex( hex_string )
+
+The opposite operation from above. The resulting hex string will be of even length.
+
+##### bigint_to_byte_array( integer )
+
+Will convert a large integer of type BigInt to a Big Endian byte array equivalent.
+
+##### byte_array_to_bigint( byte_array )
+
+The opposite operation from above.  The byte array must be Big Endian.
+
 
 ## Cryptographic Utilities
 

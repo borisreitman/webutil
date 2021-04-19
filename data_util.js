@@ -91,6 +91,40 @@ WebUtil.Data_Util=(function(){
     return new TextEncoder(encoding).encode(str);
   }
 
+  function byte_array_to_hex( byte_array ){
+		var hex = [];
+    for (var i=0; i<byte_array.length; i++){
+      hex.push(_pad_hex( byte_array[i].toString(16) ));
+    }
+    return hex.join('');
+  }
+
+  function hex_to_byte_array( hex ){
+    hex = _pad_hex(hex);
+    var byte_array = new Uint8Array(hex.length/2);
+
+    for (var i=0, j=0; i < byte_array.length; i++, j+=2){
+      byte_array[i] = parseInt(hex.slice(j, j+2), 16);
+    }
+    return byte_array;
+  }
+
+  function _pad_hex(hex){
+    if (hex.length % 2 == 1) {
+      hex = '0' + hex;
+    }
+    return hex;
+  }
+
+  // see https://coolaj86.com/articles/convert-js-bigints-to-typedarrays/
+  function bigint_to_byte_array(number){
+    return hex_to_byte_array(number.toString(16));
+  }
+
+  function byte_array_to_bigint(byte_array){
+		return BigInt('0x' + byte_array_to_hex( byte_array ));
+  }
+
   return {
     base64_url_encode,
     base64_url_decode,
@@ -100,6 +134,12 @@ WebUtil.Data_Util=(function(){
     base64_url_decode_to_byte_array,
     encode_byte_arrays_in_dict,
     decode_byte_arrays_in_dict,
-    string_to_byte_array
+    string_to_byte_array,
+
+    hex_to_byte_array,
+    byte_array_to_hex,
+
+    bigint_to_byte_array,
+    byte_array_to_bigint
   };
 })();
