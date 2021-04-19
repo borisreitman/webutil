@@ -207,6 +207,127 @@ WebUtil.Crypt_Util=(function(){
 		)
 	}
 
+  function byte_array_to_hex( byte_array ){
+		var hex = [];
+    for (var i=0; i<byte_array.length; i++){
+      hex.push(_pad_hex( byte_array[i].toString(16) ));
+    }
+    return hex.join('');
+  }
+
+  function hex_to_byte_array( hex ){
+    hex = _pad_hex(hex);
+    var byte_array = new Uint8Array(hex.length/2);
+
+    for (var i=0, j=0; i < byte_array.length; i++, j+=2){
+      byte_array[i] = parseInt(hex.slice(j, j+2), 16);
+    }
+    return byte_array;
+  }
+
+  function _pad_hex(hex){
+    if (hex.length % 2 == 1) {
+      hex = '0' + hex;
+    }
+    return hex;
+  }
+
+  // see https://coolaj86.com/articles/convert-js-bigints-to-typedarrays/
+  function bigint_to_byte_array(number){
+    return hex_to_byte_array(number.toString(16));
+  }
+
+  function byte_array_to_bigint(byte_array){
+		return BigInt('0x' + byte_array_to_hex( byte_array ));
+  }
+
+  //https://stackoverflow.com/questions/17171542/algorithm-for-elliptic-curve-point-compression
+  function compress_ecc_coord(x,y){
+    var compressed = new Uint8Array( x.length + 1 );
+
+    compressed[0] = 2 + ( y[ y.length-1 ] & 1 );
+    compressed.set( x, 1 );
+
+    return compressed;
+  }
+
+
+  function decompress_ecc_coord(compressed, a, b, p, sqrt_exponent){
+    /* 
+      Assumes formula is y^2 = x^3 + ax + b (mod p)
+
+      - a, b, and p must be of BigInt type
+      - sqrt_exponent must be equal to: (p+1)/4
+      - compressed is a byte array, the return value from compress_ecc_coord(x,y)
+
+      returns [x,y] where the coordinates are byte arrays
+    */
+
+    // The first byte must be 2 or 3. 4 indicates an uncompressed key, and anything else is invalid.
+    var sign_y = compressed[0] - 2;
+    var x_byte_array = compressed.subarray(1);
+    var x = byte_array_to_bigint( x_byte_array );
+
+    // compute y^2 = x^3 - 3x + b
+    var y_squared = x**BigInt(3) % p;
+    y_squared = (y_squared + a*x) % p
+    y_squared = (y_squared + b) % p
+
+    // raising y_squared to the special power of (p+1)/4 yields one of its square roots.
+    var y = bigint_mod_pow( y_squared, sqrt_exponent, p );
+
+    // if the parity does not match, then it is the other root
+    if ( y % 2n !== sign_y ) {
+      y = p - y;
+    }
+
+    var y_byte_array = bigint_to_byte_array(y);
+
+    return [ x_byte_array, y_byte_array ];
+  }
+
+  function bigint_mod_pow(a, b, n) { // a^b mod n
+    a = a % n;
+    var result = 1n;
+    var x = a;
+    while (b > 0) {
+      var leastSignificantBit = b % 2n;
+      b = b / 2n;
+      if (leastSignificantBit == 1n) {
+        result = result * x;
+        result = result % n;
+      }
+      x = x * x;
+      x = x % n;
+    }
+    return result;
+  }
+
+  var _ecc_p256;
+
+  function _init_ecc_p256(){
+    if (_ecc_p256){
+      return;
+    }
+    const prime = 2n**256n - 2n**224n + 2n**192n + 2n**96n - 1n;
+    _ecc_p256 = {
+      prime,
+      sqrt_exponent: (prime+1n)/4n,
+      a: -3n,
+      b: BigInt( '41058363725152142129326129780047268409114441015993725554835256314039467401291' )
+    };
+  }
+
+  function compress_p256_ecc_coord(x,y){
+    return compress_ecc_coord(x, y);
+  }
+
+  function decompress_ecc_p256_coord( compressed ){
+    _init_ecc_p256();
+    var L=_ecc_p256;
+    return decompress_ecc_coord(compressed, L['a'], L['b'], L['prime'], L['sqrt_exponent']);
+  }
+
   return {
     get_jwk,
 
@@ -233,7 +354,11 @@ WebUtil.Crypt_Util=(function(){
     generate_symmetric_key,
 
     wrap_symmetric_key,
-    unwrap_symmetric_key
+    unwrap_symmetric_key,
+
+    compress_ecc_coord,
+    decompress_ecc_coord,
+    decompress_ecc_p256_coord
 
   };
 })();

@@ -73,6 +73,28 @@ button { display: block }
       console.log(shared_secret);
       console.log(shared_secret2);
 
+      // Compression of DH public key
+      const { base64_url_decode_to_byte_array } = WebUtil.Data_Util;
+
+
+      var x = alice_pubkey_jwk.x;
+      var y = alice_pubkey_jwk.y;
+      console.log("original x: ", x);
+      console.log("original y: ", y);
+
+      x = base64_url_decode_to_byte_array(x);
+      y = base64_url_decode_to_byte_array(y);
+
+      const { compress_ecc_coord, decompress_ecc_p256_coord } = WebUtil.Crypt_Util;
+      var compressed = compress_ecc_coord(x,y);
+      console.log(compressed);
+
+      var [x,y] = decompress_ecc_p256_coord(compressed);
+      x = base64_url_encode_byte_array(x);
+      y = base64_url_encode_byte_array(y);
+      console.log("decompressed x:", x);
+      console.log("decompressed y:", y);
+
 
       // AES-256 GCM
 
@@ -95,7 +117,6 @@ button { display: block }
       if (plaintext == "hello world"){
         console.log("valid");
       }
-
 
       // Key-encryption-Key (KEK)
 
@@ -138,8 +159,7 @@ button { display: block }
 
       // big numbers
       // NIST P-256 (secp256r1) 2^256 - 2^224 + 2^192 + 2^96 - 1
-      const _2 = BigInt(2), _256 = BigInt(256), _224 = BigInt(224), _192 = BigInt(192), _96 = BigInt(96), _1 = BigInt(1);
-      const prime = _2**_256 - _2**_224 + _2**_192 + _2**_96 - _1;
+      const prime = 2n**256n - 2n**224n + 2n**192n + 2n**96n - 1n;
       console.log("prime: ", prime);
 
       const { bigint_to_byte_array, byte_array_to_bigint,
@@ -149,8 +169,6 @@ button { display: block }
       console.log("prime: ", byte_array_to_bigint(bigint_to_byte_array(prime)));
       console.log(byte_array_to_hex(bigint_to_byte_array(prime)));
       console.log(hex_to_byte_array(byte_array_to_hex(bigint_to_byte_array(prime))));
-      
-
     }
   </script>
   <script src="./rand_util.js"></script>

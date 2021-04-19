@@ -386,6 +386,52 @@ Generates a new ECDH private and public key, returning a dict `{ privateKey: ...
 
 
 
+### Coordinate Compression
+
+Elliptic Curve (x,y) coordinates can be compressed down to (x, sign(y)), which is half the length. This makes it easier to share public keys.
+
+Here's how to use the compression and decompression functions in a Diffie-Hellman exchange.
+
+```javascript
+  var keypair = await generate_dh_keypair();
+  var jwk = await get_jwk( keypair.publicKey );
+  
+  var x = base64_decode_to_byte_array( jwk.x );
+  var y = base64_decode_to_byte_array( jwx.y );
+
+  var compressed = compress_ecc_p256_coord(x, y);
+
+  compressed = base64_url_encode_byte_array( compressed );
+  // send compressed as DH-offer
+
+  // on the receiving end, decompress
+
+  compressed = base64_decode_to_byte_array( compressed );
+  var [x, y] = decompress_p256_ecc_coord( compressed );
+```
+
+##### compress_ecc_coord(x, y)
+
+Compresses coordinate (x,y) represented as byte arrays to a byte array that is
+one byte larger than the length of `x`. 
+
+##### decompress_ecc_coord( byte_array, a, b, p, sqrt_exponent )
+
+Opposite operation from the above function. Returns `[x, y]` which is an array of two elements. Each of the elements is a byte array. 
+
+- The input byte array must be the output of the above `compress_ecc_coord` function.
+- Assumes the ECC formula is `y^2 = x^3 + ax + b (mod p)`
+- a, b, and p must be of `BigInt` data type
+- `sqrt_exponent` must be equal to: (p+1)/4
+
+##### decompress_p256_ecc_coord( byte_array )
+
+Calls `decompress_ecc_coord` with parameters for the ECC P-256 curve. 
+
+Note that this is the curve that is used by the Diffie-Hellman utility functions. See code sample above on how to use compression in Diffie-Hellman exchange to shorten the public key that must be communicated.
+
+
+
 ### Symmetric Encryption
 
 Uses AES-256 GCM to do the encryption, with tag length of 128.
