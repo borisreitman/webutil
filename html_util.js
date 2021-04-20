@@ -120,6 +120,10 @@ WebUtil.HTML_Util=(function(){
     return new Blob([json], {type: media_type || 'application/json;charset=utf-8'})
   }
 
+  function copy_to_clipboard( input_element ){
+    input_element.select();
+    document.execCommand("copy");
+  }
 
   return {
     linkify,
@@ -132,5 +136,7 @@ WebUtil.HTML_Util=(function(){
     create_blob_from_byte_array,
     create_blob_from_string,
     create_blob_from_dict,
+
+    copy_to_clipboard,
   };
 })();

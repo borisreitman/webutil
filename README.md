@@ -135,7 +135,9 @@ Note: No "Save As" dialog would be presented. If you want it, use the <a href="h
 
 Use with links returned by `prepare_download_link`.  Equivalent to `a.click()` but works in all browers to trigger download.
 
+##### copy_to_clipboard( input_element )
 
+Takes an input element, and copies what's inside into to clipboard.
 
 
 ## Date Utilities
@@ -251,6 +253,14 @@ Like above, but assumes input is in Base64 URL encoding.
 
 Decodes a Base64 encoded string to a Uint8Array.
 
+##### base58_encode_byte_array( str, alphabet = BITCOIN_BASE58 )
+
+Encode a byte array into Base58 representation. By default uses Bitcoin's
+alphabet, but allows you to override it.
+
+##### base58_decode_from_byte_array( str, alphabet = BITCOIN_BASE58 )
+
+Opposite operation from above.
 
 ##### encode_byte_arrays_in_dict( dict )
 

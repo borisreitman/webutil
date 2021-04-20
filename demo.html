@@ -169,6 +169,13 @@ button { display: block }
       console.log("prime: ", byte_array_to_bigint(bigint_to_byte_array(prime)));
       console.log(byte_array_to_hex(bigint_to_byte_array(prime)));
       console.log(hex_to_byte_array(byte_array_to_hex(bigint_to_byte_array(prime))));
+
+      const { base58_encode_byte_array, base58_decode_to_byte_array } = WebUtil.Data_Util;
+      var data = Rand_Util.random_bytes(32);
+      console.log("original data: ", data);
+      var btc_encoded = base58_encode_byte_array(data);
+      console.log("bitcoin encoded data: ", btc_encoded);
+      console.log("decoded from base58: ", base58_decode_to_byte_array(btc_encoded));
     }
   </script>
   <script src="./rand_util.js"></script>

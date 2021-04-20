@@ -122,7 +122,56 @@ WebUtil.Data_Util=(function(){
   }
 
   function byte_array_to_bigint(byte_array){
-		return BigInt('0x' + byte_array_to_hex( byte_array ));
+    return BigInt('0x' + byte_array_to_hex( byte_array ));
+  }
+
+  // Base58 encoding, derived from https://github.com/paulmillr/micro-base58/blob/master/index.js
+
+  const B58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+
+  function base58_encode_byte_array(byte_array, alphabet = B58_ALPHABET){
+    let x = byte_array_to_bigint(byte_array);
+    let list = [];
+    while (x > 0) {
+      var mod = Number(x % 58n);
+      x = x / 58n;
+      list.push(alphabet[mod]);
+    }
+    for (let i = 0; byte_array[i] === 0; i++) {
+      list.push(alphabet[0]);
+    }
+    return list.reverse().join('');
+  }
+
+  function base58_decode_to_byte_array(str, letters = B58_ALPHABET) {
+    if (str.length === 0)
+      return new Uint8Array([]);
+    const bytes = [0];
+    for (let i = 0; i < str.length; i++) {
+      var char = str[i];
+      var value = letters.indexOf(char);
+      if (value === undefined) {
+	throw new Error(`base58.decode received invalid input '${char}'`);
+      }
+      for (let j = 0; j < bytes.length; j++) {
+	bytes[j] *= 58;
+      }
+      bytes[0] += value;
+      let carry = 0;
+      for (let j = 0; j < bytes.length; j++) {
+	bytes[j] += carry;
+	carry = bytes[j] >> 8;
+	bytes[j] &= 0xff;
+      }
+      while (carry > 0) {
+	bytes.push(carry & 0xff);
+	carry >>= 8;
+      }
+    }
+    for (let i = 0; i < str.length && str[i] === '1'; i++) {
+      bytes.push(0);
+    }
+    return new Uint8Array(bytes.reverse());
   }
 
   return {
@@ -140,6 +189,9 @@ WebUtil.Data_Util=(function(){
     byte_array_to_hex,
 
     bigint_to_byte_array,
-    byte_array_to_bigint
+    byte_array_to_bigint,
+
+    base58_encode_byte_array,
+    base58_decode_to_byte_array
   };
 })();
