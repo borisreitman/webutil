@@ -3,14 +3,14 @@ var WebUtil; if (!WebUtil) WebUtil = {};
 
 WebUtil.Data_Util=(function(){
 
-  function base64_url_encode(str) { // takes base64 encoded string as input
+  function base64url_encode(str) { // takes base64 encoded string as input
     return str
       .replace(/=/g, "")
       .replace(/\+/g, "-")
       .replace(/\//g, "_");
   }
 
-  function base64_url_decode(input) { // returns base64 encoded sting
+  function base64url_decode(input) { // returns base64 encoded sting
     // Replace non-url compatible chars with base64 standard chars
     input = input
         .replace(/-/g, '+')
@@ -43,16 +43,16 @@ WebUtil.Data_Util=(function(){
 		return btoa(get_binary_string(byte_array));
   }
 
-  function base64_url_encode_byte_array(byte_array){
-		return base64_url_encode( base64_encode_byte_array(byte_array) );
+  function base64url_encode_byte_array(byte_array){
+		return base64url_encode( base64_encode_byte_array(byte_array) );
   }
 
 	function base64_decode_to_byte_array(str) {
 		return Uint8Array.from(atob(str), c => c.charCodeAt(0))
 	}
 
-	function base64_url_decode_to_byte_array(str) {
-		return base64_decode_to_byte_array( base64_url_decode(str) );
+	function base64url_decode_to_byte_array(str) {
+		return base64_decode_to_byte_array( base64url_decode(str) );
 	}
 
   const _BASE64_PACK_PREFIX="data:;base64,";
@@ -175,12 +175,12 @@ WebUtil.Data_Util=(function(){
   }
 
   return {
-    base64_url_encode,
-    base64_url_decode,
+    base64url_encode,
+    base64url_decode,
     base64_encode_byte_array,
-    base64_url_encode_byte_array,
+    base64url_encode_byte_array,
     base64_decode_to_byte_array,
-    base64_url_decode_to_byte_array,
+    base64url_decode_to_byte_array,
     encode_byte_arrays_in_dict,
     decode_byte_arrays_in_dict,
     string_to_byte_array,

@@ -226,12 +226,12 @@ Note that there is a difference between Base64 encoded string, and a  Base64-URL
 
 All functions are synchronous.
 
-##### base64_url_encode( base64_string )
+##### base64url_encode( base64_string )
 
 Takes an already Base64 encoded string, and converts it into Base64-URL encoded
 string. 
 
-##### base64_url_decode( string )
+##### base64url_decode( string )
 
 Takes an a Base64-URL encoded string, and returns a Base64 encoded string.
 
@@ -239,7 +239,7 @@ Takes an a Base64-URL encoded string, and returns a Base64 encoded string.
 
 Encodes byte array to base64.
 
-##### base64_url_encode_byte_array( byte_array )
+##### base64url_encode_byte_array( byte_array )
 
 Use this to strigify raw cryptographic material in one function call. 
 
@@ -247,7 +247,7 @@ Use this to strigify raw cryptographic material in one function call.
 
 Decodes a Base64 encoded string to a Uint8Array.
 
-##### base64_url_decode_to_byte_array( str )
+##### base64url_decode_to_byte_array( str )
 
 Like above, but assumes input is in Base64 URL encoding.
 
@@ -411,7 +411,7 @@ Here's how to use the compression and decompression functions in a Diffie-Hellma
 
   var compressed = compress_ecc_p256_coord(x, y);
 
-  compressed = base64_url_encode_byte_array( compressed );
+  compressed = base64url_encode_byte_array( compressed );
   // send compressed as DH-offer
 
   // on the receiving end, decompress
@@ -474,10 +474,10 @@ Recall that the `shared_secret_raw` value in the ECDH example was returned by th
 
 ```javascript
   const { get_symmetric_key_from_string } = WebUtil.Crypt_Util;
-  const { base64_url_encode_byte_array } = WebUtil.Data_Util;
+  const { base64url_encode_byte_array } = WebUtil.Data_Util;
 
   var shared_secret_raw = await derive_dh_shared_secret(bob_keypair.privateKey, alice_pubkey)
-  var shared_secret = base64_url_encode_byte_array(shared_secret_raw);
+  var shared_secret = base64url_encode_byte_array(shared_secret_raw);
 
   var key = await get_symmetric_key_from_string(shared_secret);
   //OR: var key = await get_symmetric_key_from_byte_array(shared_secret_raw);
@@ -508,7 +508,7 @@ Takes a JSON Web Key (JWK) as input, and returns an equivalent AES-GCM CryptoKey
 
 Like above, but only takes in the value for the `k` field in a JSON Web Key (JWK) data structure, and hardcodes the rest accoring to AES-256 GCM.  
 
-You can produce this value from a random set of 32 bytes, by first encoding it using Base64-URL encoding. You can use `Data_Util.base64_url_encode_byte_array` utility function to do it.
+You can produce this value from a random set of 32 bytes, by first encoding it using Base64-URL encoding. You can use `Data_Util.base64url_encode_byte_array` utility function to do it.
 
 ##### get_symmetric_key_from_byte_array(byte_array, disable_extracting = false)
 
