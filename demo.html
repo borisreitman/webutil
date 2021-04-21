@@ -176,6 +176,17 @@ button { display: block }
       var btc_encoded = base58_encode_byte_array(data);
       console.log("bitcoin encoded data: ", btc_encoded);
       console.log("decoded from base58: ", base58_decode_to_byte_array(btc_encoded));
+
+      //sha256
+      const { sha256_byte_array } = WebUtil.Crypt_Util;
+      const { string_to_byte_array } = WebUtil.Data_Util;
+
+      var hash_byte_array = await sha256_byte_array( string_to_byte_array("hello world") );
+      var expected_hex = "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9";
+      var hash_hex = byte_array_to_hex(hash_byte_array);
+      if ( hash_hex == expected_hex) {
+        console.log("sha256 is valid");
+      }
     }
   </script>
   <script src="./rand_util.js"></script>

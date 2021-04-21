@@ -16,6 +16,11 @@ WebUtil.Crypt_Util=(function(){
      return crypto.subtle.exportKey("jwk", key_obj);
   }
 
+  function sha256_byte_array(data){
+		return crypto.subtle.digest({ name: "SHA-256", }, data).then(function(array_buffer){
+		  return new Uint8Array(array_buffer);
+		})
+  }
 
   // HMAC-SHA256
 
@@ -330,6 +335,7 @@ WebUtil.Crypt_Util=(function(){
 
   return {
     get_jwk,
+    sha256_byte_array,
 
     //HMAC
     get_hmac_key,

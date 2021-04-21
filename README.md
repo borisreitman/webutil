@@ -564,3 +564,8 @@ The opposite operation. The `ciphertext` is the output of the wrapping function.
 
 Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise.  Use this for sending a key over the network.
 
+##### sha256_byte_array( byte_array )
+
+Takes a Uint8Array of any size and returns a Promise of a SHA-256 hashcode,
+represented as a Uint8Array of size 32 bytes.
+

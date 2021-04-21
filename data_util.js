@@ -192,6 +192,6 @@ WebUtil.Data_Util=(function(){
     byte_array_to_bigint,
 
     base58_encode_byte_array,
-    base58_decode_to_byte_array
+    base58_decode_to_byte_array,
   };
 })();
