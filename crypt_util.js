@@ -336,7 +336,7 @@ WebUtil.Crypt_Util=(function(){
   const KDF_ITERATIONS = 100000;
   const KDF_SALT = new Uint8Array([0]);
 
-  async function derive_key_from_password( str, iterations = KDF_ITERATIONS, salt=KDF_SALT, disable_extracting ){
+  async function get_symmetric_key_from_password( str, iterations = KDF_ITERATIONS, salt=KDF_SALT, disable_extracting ){
     // from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey#pbkdf2_2
     var base_key = await window.crypto.subtle.importKey(
       "raw",
@@ -382,6 +382,7 @@ WebUtil.Crypt_Util=(function(){
     symmetric_encrypt_byte_array,
     symmetric_decrypt_byte_array,
     get_symmetric_key_from_string,
+    get_symmetric_key_from_password,
     get_symmetric_key_from_byte_array,
     get_symmetric_key,
     generate_symmetric_key,
@@ -392,8 +393,5 @@ WebUtil.Crypt_Util=(function(){
     compress_ecc_coord,
     decompress_ecc_coord,
     decompress_ecc_p256_coord,
-
-    // pbkf2
-    derive_key_from_password
   };
 })();
