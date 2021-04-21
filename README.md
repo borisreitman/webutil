@@ -569,3 +569,8 @@ Takes a CryptoKey object, and returns its JSON Web Key encoding as a Promise.  U
 Takes a Uint8Array of any size and returns a Promise of a SHA-256 hashcode,
 represented as a Uint8Array of size 32 bytes.
 
+##### derive_key_from_password( password_string, iterations = 100000, salt = 0, disable_extracting = false)
+
+Takes a string and returns a CryptoKey object. Passes it through PDKDF2
+algorithm with default options that can be changed. The salt must be passed as a Uint8Array. Returns a Promise.
+
