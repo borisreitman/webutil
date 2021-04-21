@@ -137,6 +137,11 @@ button { display: block }
         console.log("valid");
       }
 
+      // derive key from arbitrary password
+      const { derive_key_from_password } = WebUtil.Crypt_Util;
+      var key = await derive_key_from_password("foo");
+      console.log("pbkdf2 key: ", await get_jwk(key));
+
       // pack and unpack binary data
       const { 
         encode_byte_arrays_in_dict, 

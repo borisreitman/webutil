@@ -3,6 +3,7 @@ var WebUtil; if (!WebUtil) WebUtil = {};
 
 WebUtil.Crypt_Util=(function(){
   var crypto_subtle = crypto.subtle || crypto.webkitSubtle;
+  const KEY_AUTHZ = ["encrypt","decrypt","wrapKey","unwrapKey"];
 
   function _get_byte_array(str) {
     return new TextEncoder("utf-8").encode(str);
@@ -104,7 +105,7 @@ WebUtil.Crypt_Util=(function(){
       alg: "A256GCM",
       ext: true,
       kty: "oct",
-      key_ops:["encrypt","decrypt","wrapKey","unwrapKey"]
+      key_ops: KEY_AUTHZ
     };
     return get_symmetric_key(key_jwk, disable_extracting);
   }
@@ -115,13 +116,12 @@ WebUtil.Crypt_Util=(function(){
       key_byte_array,
       { name: "AES-GCM" },
       !disable_extracting,
-      ["encrypt","decrypt","wrapKey","unwrapKey"]
+      KEY_AUTHZ
     );
   }
 
   function get_symmetric_key(key_jwk, disable_extracting){
-    // first convert str into a full jwk key, with all the right options
-    return crypto.subtle.importKey("jwk", key_jwk, { name: "AES-GCM" }, !disable_extracting, ["encrypt","decrypt","wrapKey","unwrapKey"]);
+    return crypto.subtle.importKey("jwk", key_jwk, { name: "AES-GCM" }, !disable_extracting, KEY_AUTHZ);
   }
 
   function symmetric_encrypt(key, nonce, str){
@@ -171,7 +171,7 @@ WebUtil.Crypt_Util=(function(){
         length: 256, 
       },
       !disable_extracting,
-      ["encrypt", "decrypt", "wrapKey", "unwrapKey"]
+      KEY_AUTHZ
     )
   }
 
@@ -208,7 +208,7 @@ WebUtil.Crypt_Util=(function(){
 					length: 256
 			},
 			!disable_extracting, 
-			["encrypt", "decrypt", "wrapKey", "unwrapKey"]
+			KEY_AUTHZ
 		)
 	}
 
@@ -333,6 +333,33 @@ WebUtil.Crypt_Util=(function(){
     return decompress_ecc_coord(compressed, L['a'], L['b'], L['prime'], L['sqrt_exponent']);
   }
 
+  const KDF_ITERATIONS = 100000;
+  const KDF_SALT = new Uint8Array([0]);
+
+  async function derive_key_from_password( str, iterations = KDF_ITERATIONS, salt=KDF_SALT, disable_extracting ){
+    // from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey#pbkdf2_2
+    var base_key = await window.crypto.subtle.importKey(
+      "raw",
+      _get_byte_array( str ),
+      "PBKDF2",
+      false,
+      ["deriveBits", "deriveKey"]
+    );
+    var key = await window.crypto.subtle.deriveKey(
+      {
+        "name": "PBKDF2",
+        salt: salt,
+        "iterations": iterations,
+        "hash": "SHA-256"
+      },
+      base_key,
+      { "name": "AES-GCM", "length": 256},
+      !disable_extracting,
+      KEY_AUTHZ
+    );
+    return key;
+  }
+
   return {
     get_jwk,
     sha256_byte_array,
@@ -364,7 +391,9 @@ WebUtil.Crypt_Util=(function(){
 
     compress_ecc_coord,
     decompress_ecc_coord,
-    decompress_ecc_p256_coord
+    decompress_ecc_p256_coord,
 
+    // pbkf2
+    derive_key_from_password
   };
 })();
