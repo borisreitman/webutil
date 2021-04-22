@@ -139,6 +139,9 @@ Use with links returned by `prepare_download_link`.  Equivalent to `a.click()` b
 
 Takes an input element, and copies what's inside into to clipboard.
 
+##### find_parent_node( node, class_name )
+
+Searches elements up the DOM hierarchy, until it finds an element with a given CSS class.
 
 ## Date Utilities
 

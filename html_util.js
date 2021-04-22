@@ -123,6 +123,16 @@ WebUtil.HTML_Util=(function(){
   function copy_to_clipboard( input_element ){
     input_element.select();
     document.execCommand("copy");
+    input_element.blur();
+  }
+
+  function find_parent_node(node, class_name){
+    var depth = 100
+    while (depth > 0 && ! node.className.split(" ").includes(class_name)){
+      depth--;
+      node = node.parentNode;
+    }
+    return node;
   }
 
   return {
@@ -138,5 +148,6 @@ WebUtil.HTML_Util=(function(){
     create_blob_from_dict,
 
     copy_to_clipboard,
+    find_parent_node
   };
 })();
