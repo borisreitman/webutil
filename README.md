@@ -147,7 +147,7 @@ Searches elements up the DOM hierarchy, until it finds an element with a given C
 
 You can call this function on every input event. It will make sure that the text
 area expands or collapses to wrap the text. It will not collapse more than its
-original size.
+original size. Only resizes he height, doesn't touch the width.
 
 ## Date Utilities
 
