@@ -143,6 +143,12 @@ Takes an input element, and copies what's inside into to clipboard.
 
 Searches elements up the DOM hierarchy, until it finds an element with a given CSS class.
 
+##### resize_textarea_to_fit( textarea_node )
+
+You can call this function on every input event. It will make sure that the text
+area expands or collapses to wrap the text. It will not collapse more than its
+original size.
+
 ## Date Utilities
 
 Functions that help present dates to end user in a concise, easily understoond way.

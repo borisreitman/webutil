@@ -135,6 +135,11 @@ WebUtil.HTML_Util=(function(){
     return node;
   }
 
+  function resize_textarea_to_fit( element ){
+    element.style.height = "";
+    element.style.height = element.scrollHeight + "px";
+  }
+
   return {
     linkify,
     linkify_text,
@@ -148,6 +153,8 @@ WebUtil.HTML_Util=(function(){
     create_blob_from_dict,
 
     copy_to_clipboard,
-    find_parent_node
+    find_parent_node,
+
+    resize_textarea_to_fit
   };
 })();
