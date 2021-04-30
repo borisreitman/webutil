@@ -149,6 +149,12 @@ You can call this function on every input event. It will make sure that the text
 area expands or collapses to wrap the text. It will not collapse more than its
 original size. Only resizes he height, doesn't touch the width.
 
+##### remove_css_classes( element, names )
+
+The `names` is a list of classes to remove. Does not return anything, but modifies the element's `className` property.
+
+If you do not have JQuery loaded, this a helper function that can help you swap one class with another, without affecting any other CSS classes that are set.
+
 ## Date Utilities
 
 Functions that help present dates to end user in a concise, easily understoond way.

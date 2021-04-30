@@ -140,6 +140,18 @@ WebUtil.HTML_Util=(function(){
     element.style.height = element.scrollHeight + "px";
   }
 
+  function remove_css_classes(element, list){
+    var names = element.className.replace(/  +/g, " ").split(" ");
+    var lookup = {};
+    for (var name of names){
+      lookup[name] = 1;
+    }
+    for (var name of list){
+      delete lookup[name];
+    }
+    element.className = Object.keys(lookup).join(" ");
+  }
+
   return {
     linkify,
     linkify_text,
@@ -155,6 +167,7 @@ WebUtil.HTML_Util=(function(){
     copy_to_clipboard,
     find_parent_node,
 
-    resize_textarea_to_fit
+    resize_textarea_to_fit,
+    remove_css_classes
   };
 })();
