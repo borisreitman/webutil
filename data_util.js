@@ -91,6 +91,10 @@ WebUtil.Data_Util=(function(){
     return new TextEncoder(encoding).encode(str);
   }
 
+  function byte_array_to_string(byte_array, encoding = "utf-8") {
+    return new TextDecoder(encoding).decode(byte_array);
+  }
+
   function byte_array_to_hex( byte_array ){
 		var hex = [];
     for (var i=0; i<byte_array.length; i++){
@@ -215,7 +219,9 @@ WebUtil.Data_Util=(function(){
     base64url_decode_to_byte_array,
     encode_byte_arrays_in_dict,
     decode_byte_arrays_in_dict,
+
     string_to_byte_array,
+    byte_array_to_string,
 
     hex_to_byte_array,
     byte_array_to_hex,

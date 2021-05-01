@@ -287,6 +287,10 @@ The opposite operation. Returns a shallow copy of the dict.  It doesn't descent 
 
 Takes a string and returns a byte array that represents it.
 
+##### byte_array_to_string( encoding = 'utf-8' )
+
+The opposite to above function.
+
 ##### hex_to_byte_array( hex_string )
 
 If the hex string is not of even length, it will first left-pad it with a zero.
