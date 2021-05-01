@@ -107,18 +107,6 @@ WebUtil.HTML_Util=(function(){
 		}
   }
 
-  function create_blob_from_byte_array(byte_array, media_type){
-    return new Blob(byte_array, {type: media_type || 'application/octet-stream'})
-  }
-
-  function create_blob_from_string(str, media_type){
-    return new Blob([str], {type: media_type || 'text/plain'})
-  }
-
-  function create_blob_from_dict(dict, formatted, media_type){
-    var json = formatted ? JSON.stringify(dict, null, 1) : JSON.stringify(dict);
-    return new Blob([json], {type: media_type || 'application/json;charset=utf-8'})
-  }
 
   function copy_to_clipboard( input_element ){
     input_element.select();
@@ -152,6 +140,24 @@ WebUtil.HTML_Util=(function(){
     element.className = Object.keys(lookup).join(" ");
   }
 
+  function get_dropped_files(ev){
+    var files = [];
+
+    if (ev.dataTransfer.items) { // DataTransferItemList is supported
+      for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+        let item = ev.dataTransfer.items[i]
+        if (item.kind == 'file'){
+          files.push( item.getAsFile() );
+        }
+      }
+    } else { // use DataTransfer
+      for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+        files.push(file);
+      }
+    }
+    return files;
+  }
+
   return {
     linkify,
     linkify_text,
@@ -160,14 +166,13 @@ WebUtil.HTML_Util=(function(){
 
     prepare_download_link,
 		click_link,
-    create_blob_from_byte_array,
-    create_blob_from_string,
-    create_blob_from_dict,
 
     copy_to_clipboard,
     find_parent_node,
 
     resize_textarea_to_fit,
-    remove_css_classes
+    remove_css_classes,
+
+    get_dropped_files
   };
 })();

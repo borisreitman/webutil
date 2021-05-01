@@ -1,12 +1,30 @@
+<head>
+	<style>
+		a { display: block }
+		button { display: block }
+    .drop_zone {
+       background-color: lightgrey;
+       padding: 20px;
+       width: 200px;
+    }
+	</style>
+</head>
 <body onload="demo()">
+
+<input type="file" onchange="file_handler(event)" >
+<div class="drop_zone" ondrop="drop_handler(event);" ondragover="dragover_handler(event);">
+  <p>Drag one or more files to this Drop Zone ...</p>
+</div>
+
+
+
 <div id="$foo">
   Go to https://example.com 
 </div>
-<style>
-a { display: block }
-button { display: block }
-</style>
+
 <a id="$download">download test</a>
+
+
 <script>
     var _test_blob;
 
@@ -154,9 +172,9 @@ button { display: block }
       console.log(package);
 
       // Html Util -- download
-      const { prepare_download_link, 
-        create_blob_from_dict, 
-        create_blob_from_byte_array } = WebUtil.HTML_Util;
+      const { prepare_download_link } = WebUtil.HTML_Util;
+      const { create_blob_from_dict, 
+        create_blob_from_byte_array } = WebUtil.Data_Util;
 
       var data = {'a':1,'b':2};
       var blob = create_blob_from_dict(data);
@@ -193,6 +211,47 @@ button { display: block }
         console.log("sha256 is valid");
       }
     }
+
+    async function file_handler(event) {
+      var file = event.target.files[0];
+      encrypt_file(file);
+    }
+
+    async function drop_handler(ev) {
+      console.log('File(s) dropped');
+      var files = [];
+
+      // Prevent default behavior (Prevent file from being opened)
+      ev.preventDefault();
+
+      const { get_dropped_files } = WebUtil.HTML_Util;
+      var files = get_dropped_files(ev);
+      var file = files[0];
+      encrypt_file(file);
+    }
+
+    async function encrypt_file(file) {
+      const { read_file_as_byte_array } = WebUtil.Data_Util;
+      
+      const { create_blob_from_byte_array } = WebUtil.Data_Util;
+
+      var byte_array = await read_file_as_byte_array( file );
+      var blob = await create_blob_from_byte_array( byte_array );
+      
+      const { prepare_download_link } = WebUtil.HTML_Util;
+      var link = document.createElement('a');
+      link.innerText = 'download ' + file.name;
+      document.body.appendChild(link);
+      prepare_download_link(blob, file.name, link)
+    }
+
+    function dragover_handler(ev) {
+      console.log('File(s) in drop zone');
+
+      // Prevent default behavior (Prevent file from being opened)
+      ev.preventDefault();
+    }
+
   </script>
   <script src="./rand_util.js"></script>
   <script src="./url_util.js"></script>

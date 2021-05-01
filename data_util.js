@@ -174,6 +174,38 @@ WebUtil.Data_Util=(function(){
     return new Uint8Array(bytes.reverse());
   }
 
+  function read_file_as_byte_array( file ){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        if (evt.target.error) {
+          reject(evt.target.error);
+        } else {
+          resolve( new Uint8Array(evt.target.result) );
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function byte_array_to_blob( byte_array ){
+    return new Blob( byte_array );
+  }
+
+  function create_blob_from_dict(dict, formatted, media_type){
+    var json = formatted ? JSON.stringify(dict, null, 1) : JSON.stringify(dict);
+    return new Blob([json], {type: media_type || 'application/json;charset=utf-8'})
+  }
+
+  function create_blob_from_byte_array(byte_array, media_type = "application/octet-stream"){
+    return new Blob([byte_array], {type: media_type})
+  }
+
+  function create_blob_from_string(str, media_type = "text/plain"){
+    return new Blob([str], {type: media_type })
+  }
+
+
   return {
     base64url_encode,
     base64url_decode,
@@ -193,5 +225,12 @@ WebUtil.Data_Util=(function(){
 
     base58_encode_byte_array,
     base58_decode_to_byte_array,
+
+    read_file_as_byte_array,
+
+    create_blob_from_byte_array,
+    create_blob_from_string,
+    create_blob_from_dict
+
   };
 })();

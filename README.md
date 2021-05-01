@@ -105,17 +105,6 @@ Get a meta tag of a certain name. Returns the value of the `content` attribute o
 
 Replaces unsafe HTML characters with their safer equivalents.
 
-##### create_blob_from_string(string, content_type = "plain/text;charset=utf-8")
-
-Wrapper on Blob constructor.
-
-##### create_blob_from_byte_array(byte_array, content_type = "application/octet-stream")
-
-Wrapper on Blob constructor.
-
-##### create_blob_from_dict(dict, content_type = "application/json;charset=utf-8")
-
-Wrapper on Blob constructor. Creates a Blob containing a JSON string, after serializing the `dict ` with `JSON.stringify`.
 
 ##### prepare_download_link(blob, filename = null, link_element = null)
 
@@ -154,6 +143,12 @@ original size. Only resizes he height, doesn't touch the width.
 The `names` is a list of classes to remove. Does not return anything, but modifies the element's `className` property.
 
 If you do not have JQuery loaded, this a helper function that can help you swap one class with another, without affecting any other CSS classes that are set.
+
+##### get_dropped_files( event )
+
+Use inside `drop` event handler, and pass the event object to this function.
+Returns a array of File objects dropped.
+
 
 ## Date Utilities
 
@@ -239,7 +234,7 @@ Various data format conversions.  Use these functions to encode raw binary data,
 
 Note that there is a difference between Base64 encoded string, and a  Base64-URL encoded string.  In particular, JSON Web Keys (JWK) use the Base64-URL encoding to represent keys.
 
-All functions are synchronous.
+Almost all functions are synchronous.
 
 ##### base64url_encode( base64_string )
 
@@ -309,6 +304,23 @@ Will convert a large integer of type BigInt to a Big Endian byte array equivalen
 ##### byte_array_to_bigint( byte_array )
 
 The opposite operation from above.  The byte array must be Big Endian.
+
+##### read_file_as_byte_array( file )
+
+The `file` parameter is of type `File` which is what you get when a file is
+dropped or selected in file upload. Returns a Promise.
+
+##### create_blob_from_string(string, content_type = "plain/text;charset=utf-8")
+
+Wrapper on Blob constructor.
+
+##### create_blob_from_byte_array(byte_array, content_type = "application/octet-stream")
+
+Wrapper on Blob constructor.
+
+##### create_blob_from_dict(dict, content_type = "application/json;charset=utf-8")
+
+Wrapper on Blob constructor. Creates a Blob containing a JSON string, after serializing the `dict ` with `JSON.stringify`.
 
 
 ## Cryptographic Utilities
