@@ -309,11 +309,6 @@ Will convert a large integer of type BigInt to a Big Endian byte array equivalen
 
 The opposite operation from above.  The byte array must be Big Endian.
 
-##### read_file_as_byte_array( file )
-
-The `file` parameter is of type `File` which is what you get when a file is
-dropped or selected in file upload. Returns a Promise.
-
 ##### create_blob_from_string(string, content_type = "plain/text;charset=utf-8")
 
 Wrapper on Blob constructor.
@@ -325,6 +320,19 @@ Wrapper on Blob constructor.
 ##### create_blob_from_dict(dict, content_type = "application/json;charset=utf-8")
 
 Wrapper on Blob constructor. Creates a Blob containing a JSON string, after serializing the `dict ` with `JSON.stringify`.
+
+##### concatenate_byte_arrays(...list)
+
+Returns a new UInt8Array which is a concatenation of input arrays of the same type.
+
+##### unpack_byte_array(byte_array, ...sizes)
+
+Splits input byte array according to size specification. For example, if sizes are 2, 3, 4 it will return a list of three byte arrays with these sizes respectively. Use this to unpack a header form a body in a binary packet of data.
+
+##### read_file_as_byte_array( file )
+
+The `file` parameter is of type `File` which is what you get when a file is
+dropped or selected in file upload. Returns a Promise.
 
 
 ## Cryptographic Utilities

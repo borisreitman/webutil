@@ -210,6 +210,17 @@
       if ( hash_hex == expected_hex) {
         console.log("sha256 is valid");
       }
+
+
+      // pack and unpack byte arrays
+      const { concatenate_byte_arrays, unpack_byte_array, byte_array_to_string } = WebUtil.Data_Util;
+      var part0 = string_to_byte_array("ab");
+      var part1 = string_to_byte_array("cde");
+      var part2 = string_to_byte_array("xyzw");
+      var packed = concatenate_byte_arrays(part0, part1, part2);
+      
+      var parts = unpack_byte_array( packed, 2, 3, 4 ).map(x => byte_array_to_string(x))
+      console.log("parts:", parts);
     }
 
     async function file_handler(event) {

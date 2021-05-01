@@ -209,6 +209,29 @@ WebUtil.Data_Util=(function(){
     return new Blob([str], {type: media_type })
   }
 
+  function concatenate_byte_arrays(...list){
+    var offset;
+    var total = list.reduce((a, b) => a + b.length, 0);
+    var offset = 0;
+
+    var result = new Uint8Array(total);
+    for (var item of list){
+      result.set(item, offset);
+      offset += item.length;
+    }
+
+    return result;
+  }
+
+  function unpack_byte_array(byte_array, ...sizes){
+    var offset = 0;
+    var list = [];
+    for (var size of sizes){
+      var part = byte_array.slice(offset, offset += size);
+      list.push(part);
+    }
+    return list;
+  }
 
   return {
     base64url_encode,
@@ -236,7 +259,10 @@ WebUtil.Data_Util=(function(){
 
     create_blob_from_byte_array,
     create_blob_from_string,
-    create_blob_from_dict
+    create_blob_from_dict,
+
+    concatenate_byte_arrays,
+    unpack_byte_array
 
   };
 })();
