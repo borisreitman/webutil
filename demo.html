@@ -221,6 +221,9 @@
       
       var parts = unpack_byte_array( packed, 2, 3, 4 ).map(x => byte_array_to_string(x))
       console.log("parts:", parts);
+
+      var parts = unpack_byte_array( packed, 2, 3 ).map(x => byte_array_to_string(x))
+      console.log("parts:", parts);
     }
 
     async function file_handler(event) {

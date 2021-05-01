@@ -327,7 +327,9 @@ Returns a new UInt8Array which is a concatenation of input arrays of the same ty
 
 ##### unpack_byte_array(byte_array, ...sizes)
 
-Splits input byte array according to size specification. For example, if sizes are 2, 3, 4 it will return a list of three byte arrays with these sizes respectively. Use this to unpack a header form a body in a binary packet of data.
+Splits input byte array according to size specification. For example, if sizes are 2, 3, 4 it will return a list of three byte arrays with these sizes respectively. Use this to unpack a header form a body in a binary packet of data. 
+
+If after all parts were unpacked, there is more left in the byte array, it will be returned as an additional part. So you never need to specify the length of the last part. Usually, you have a fixed sized header, and everything else is body. So, you do not need to specify the size of the variable body.
 
 ##### read_file_as_byte_array( file )
 

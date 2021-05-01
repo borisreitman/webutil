@@ -226,10 +226,15 @@ WebUtil.Data_Util=(function(){
   function unpack_byte_array(byte_array, ...sizes){
     var offset = 0;
     var list = [];
+
     for (var size of sizes){
-      var part = byte_array.slice(offset, offset += size);
-      list.push(part);
+      list.push( byte_array.slice(offset, offset += size) );
     }
+
+    if (offset < byte_array.length){
+      list.push( byte_array.slice(offset) );
+    }
+
     return list;
   }
 
