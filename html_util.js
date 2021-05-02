@@ -158,6 +158,15 @@ WebUtil.HTML_Util=(function(){
     return files;
   }
 
+  function format_file_size( bytes ){
+    var kb = bytes / 1024;
+    var mb = kb / 1024;
+    return bytes < 1024 ?  bytes+" B" :
+      kb < 1024
+      ? kb.toFixed(2)+" KB"
+      : mb.toFixed(2)+" MB";
+  }
+
   return {
     linkify,
     linkify_text,
@@ -165,7 +174,7 @@ WebUtil.HTML_Util=(function(){
     encode_html_entities,
 
     prepare_download_link,
-		click_link,
+    click_link,
 
     copy_to_clipboard,
     find_parent_node,
@@ -173,6 +182,7 @@ WebUtil.HTML_Util=(function(){
     resize_textarea_to_fit,
     remove_css_classes,
 
-    get_dropped_files
+    get_dropped_files,
+    format_file_size
   };
 })();
