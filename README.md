@@ -334,6 +334,27 @@ Splits input byte array according to size specification. For example, if sizes a
 
 If after all parts were unpacked, there is more left in the byte array, it will be returned as an additional part. So you never need to specify the length of the last part. Usually, you have a fixed sized header, and everything else is body. So, you do not need to specify the size of the variable body.
 
+##### auto_pack_byte_arrays(byte_arrays, slot_size = 3)
+
+Will allocate slot_size bytes to encode the size of each byte array, which will become
+the header. Another slot_size bytes encodes the total number of byte arrays, and
+is placed before the header. The remaning will be the concatenation of byte arrays.
+
+##### auto_unpack_byte_arrays(byte_arrays, slot_size = 3)
+
+The opposite operation to above. Specify the same slot size.
+
+##### pack_named_byte_arrays([[ name, byte_array], ...])
+
+Receives a list, each element of which contains a name and a byte array. It
+packs it into a single byte array. Use this to pack directory of files into a
+single byte array.
+
+##### unpack_named_byte_arrays(packed)
+
+The opposite operation to above. Returns the same kind of list.
+
+
 ##### read_file_as_byte_array( file )
 
 The `file` parameter is of type `File` which is what you get when a file is

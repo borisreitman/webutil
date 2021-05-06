@@ -227,6 +227,26 @@
 
       var [part0, part1, part2]  = unpack_byte_array( packed, 2, 3 ).map(x => byte_array_to_string(x))
       console.log("parts:", part0, part1, part2);
+
+      // pack files
+      const { auto_pack_byte_arrays, auto_unpack_byte_arrays } = WebUtil.Data_Util;
+      packed = auto_pack_byte_arrays([
+        string_to_byte_array( "hello" ),
+        string_to_byte_array( "world!" )
+      ])
+      console.log("auto packed:", packed);
+      var list = auto_unpack_byte_arrays( packed ).map( x => byte_array_to_string(x))
+      console.log("auto unpack result:", list);
+
+
+      const { pack_named_byte_arrays, unpack_named_byte_arrays } = WebUtil.Data_Util;
+      packed = pack_named_byte_arrays([
+        ["hello", string_to_byte_array( "kuku" )],
+        ["world!", string_to_byte_array( "reku!" )]
+      ])
+
+      var list = unpack_named_byte_arrays( packed );
+      console.log("unpacked list", list);
     }
 
     async function file_handler(event) {

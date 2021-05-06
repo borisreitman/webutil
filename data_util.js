@@ -129,6 +129,19 @@ WebUtil.Data_Util=(function(){
     return BigInt('0x' + byte_array_to_hex( byte_array ));
   }
 
+  function int_to_byte_array(number, size = 0){
+    var hex = number.toString(16);
+    var bytes = hex.length / 2;
+    if (size > 0 && bytes < size){
+      hex = "00".repeat( size - bytes ) + hex;
+    }
+    return hex_to_byte_array(hex);
+  }
+
+  function byte_array_to_int( byte_array ){
+    return Number( byte_array_to_bigint( byte_array ) );
+  }
+
   // Base58 encoding, derived from https://github.com/paulmillr/micro-base58/blob/master/index.js
 
   const B58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
@@ -238,6 +251,57 @@ WebUtil.Data_Util=(function(){
     return list;
   }
 
+  const SMALL_SLOT = 3, LARGE_SLOT = 5;
+
+  function auto_pack_byte_arrays(byte_arrays, slot_size = SMALL_SLOT){ 
+    var sizes = byte_arrays.map(x => int_to_byte_array(x.length, slot_size));
+    var total = int_to_byte_array(sizes.length, SMALL_SLOT)
+    return concatenate_byte_arrays(total, ...sizes, ...byte_arrays);
+  }
+
+  function auto_unpack_byte_arrays(packed, slot_size = SMALL_SLOT){
+    var [ total, remaining ] = unpack_byte_array( packed, SMALL_SLOT );
+    total = byte_array_to_int( total );
+    var [ header, remaining ]  = unpack_byte_array( remaining, slot_size * total);
+
+    var sizes = [];
+    for (var i=0; i < total; i++){
+      let byte_array = header.slice( i*slot_size, (i+1)*slot_size )
+      sizes.push( byte_array_to_int( byte_array ))
+    }
+
+    return unpack_byte_array( remaining, ...sizes );
+  }
+
+  function pack_named_byte_arrays(list){ // input is [ [pathname, byte_array], ... ]
+    var max_small_length = 2**SMALL_SLOT-1;
+    var files = [], names = [];
+
+    for (var item of list){
+      let [ name, byte_array ] = item;
+      files.push( byte_array );
+      names.push( string_to_byte_array( name.substr(0, max_small_length) ) );
+    }
+
+    var packed_names = auto_pack_byte_arrays(names, SMALL_SLOT);
+    var packed_files = auto_pack_byte_arrays(files, LARGE_SLOT);
+    return concatenate_byte_arrays( packed_names, packed_files );
+  }
+
+  function unpack_named_byte_arrays(packed){
+    var parts = auto_unpack_byte_arrays( packed, SMALL_SLOT );
+    var remaining = parts.pop();
+    var names = parts.map(x => byte_array_to_string(x));
+    var byte_arrays = auto_unpack_byte_arrays( remaining, LARGE_SLOT );
+
+    var result = [];
+    for (var i=0; i<names.length; i++){
+      result.push( [ names[i], byte_arrays[i] ] )
+    }
+
+    return result;
+  }
+
   return {
     base64url_encode,
     base64url_decode,
@@ -256,6 +320,8 @@ WebUtil.Data_Util=(function(){
 
     bigint_to_byte_array,
     byte_array_to_bigint,
+    int_to_byte_array,
+    byte_array_to_int,
 
     base58_encode_byte_array,
     base58_decode_to_byte_array,
@@ -267,7 +333,10 @@ WebUtil.Data_Util=(function(){
     create_blob_from_dict,
 
     concatenate_byte_arrays,
-    unpack_byte_array
-
+    unpack_byte_array,
+    auto_pack_byte_arrays,
+    auto_unpack_byte_arrays,
+    pack_named_byte_arrays,
+    unpack_named_byte_arrays
   };
 })();
