@@ -308,6 +308,14 @@ The opposite operation from above. The resulting hex string will be of even leng
 
 Will convert a large integer of type BigInt to a Big Endian byte array equivalent.
 
+##### int_to_byte_array( integer, size = 0)
+
+Will convert a regular integer to byte array, and will use up `size` bytes to do it if size is a positive number.  Otherwise, will use the smallest number of bytes needed.
+
+##### byte_array_to_int( byte_array )
+
+The opposite operation to above.
+
 ##### byte_array_to_bigint( byte_array )
 
 The opposite operation from above.  The byte array must be Big Endian.
