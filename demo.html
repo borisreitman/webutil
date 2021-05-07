@@ -323,7 +323,7 @@ Directories
         var path = file.webkitRelativePath;
         console.log("path: ", path, file);
         var byte_array = await read_file_as_byte_array( file );
-        zipper.add( path, byte_array, new Date(file.lastModified) )
+        zipper.add( path, byte_array, file.lastModified )
       }
       var packed = zipper.get_zipped();
       console.log("packed: ", packed);

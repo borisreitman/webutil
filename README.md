@@ -367,14 +367,26 @@ single byte array.
 
 The opposite operation to above. Returns the same kind of list.
 
+##### class Crc32
+
+Incrementally calculate a `Crc32` checksum. 
+
+```
+  var crc = new Crc32();
+  crc.append(byte_array1)
+  crc.append(byte_array2)
+  ...
+  console.log("result", crc.get())
+```
+
 ##### class Memory_Zip
 
 Use this class to create a ZIP file from files represented as byte arrays. There is no compression, and Zip64 is not supported, so there is a 4GB size limit.  Example:
 
 ```
   var zipper = new Memory_Zip()
-  zipper.add( "foo/bar.txt", string_to_byte_array("hello" ), new Date())
-  zipper.add( "foo/baz.txt", string_to_byte_array("world!"), new Date())
+  zipper.add( "foo/bar.txt",     string_to_byte_array("hello" ), Date.now())
+  zipper.add( "foo/baz/bud.txt", string_to_byte_array("world!"), Date.now())
   ...
   var byte_array = zipper.get_zipped()
 ```

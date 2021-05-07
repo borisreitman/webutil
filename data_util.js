@@ -348,7 +348,8 @@ WebUtil.Data_Util=(function(){
       this.offset = 0
     }
 
-    _write_datetime(byte_array, offset, date) {
+    _write_datetime(byte_array, offset, last_modified) {
+      var date = new Date(last_modified)
       var dos_time = date.getSeconds() >> 1 | date.getMinutes() << 5 | date.getHours() << 11
       var dos_date = date.getDate() | (date.getMonth() + 1) << 5 | (date.getFullYear() - 1980) << 9
       byte_array.setUint16(offset, dos_time, true)
@@ -404,9 +405,11 @@ WebUtil.Data_Util=(function(){
       return data.array
     }
 
-    add(name, byte_array, last_modified = null){ // construct date from file.lastModified
+    add(name, byte_array, last_modified = null){ 
+      // input: get last_modified from file.lastModified (Unix epoch in milliseconds)
+
       if (!last_modified){
-        last_modified = new Date();
+        last_modified = Date.now()
       }
 
       this.result = null;
@@ -472,6 +475,7 @@ WebUtil.Data_Util=(function(){
     pack_named_byte_arrays,
     unpack_named_byte_arrays,
 
+    Crc32,
     Memory_Zip
   };
 })();
