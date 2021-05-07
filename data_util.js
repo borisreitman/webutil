@@ -29,31 +29,31 @@ WebUtil.Data_Util=(function(){
   }
 
   // https://stackoverflow.com/questions/12710001/how-to-convert-uint8-array-to-base64-encoded-string
-	function get_binary_string(byte_array){
-		const CHUNK = 0x8000;
-		var chunks = [];
-		for (var i=0; i < byte_array.length; i+=CHUNK) {
-			var chunk = String.fromCharCode.apply(null, byte_array.subarray(i, i+CHUNK));
-			chunks.push(chunk);
-		}
-		return chunks.join("");
-	}
+  function get_binary_string(byte_array){
+    const CHUNK = 0x8000;
+    var chunks = [];
+    for (var i=0; i < byte_array.length; i+=CHUNK) {
+      var chunk = String.fromCharCode.apply(null, byte_array.subarray(i, i+CHUNK));
+      chunks.push(chunk);
+    }
+    return chunks.join("");
+  }
 
   function base64_encode_byte_array(byte_array){
-		return btoa(get_binary_string(byte_array));
+    return btoa(get_binary_string(byte_array));
   }
 
   function base64url_encode_byte_array(byte_array){
-		return base64url_encode( base64_encode_byte_array(byte_array) );
+    return base64url_encode( base64_encode_byte_array(byte_array) );
   }
 
-	function base64_decode_to_byte_array(str) {
-		return Uint8Array.from(atob(str), c => c.charCodeAt(0))
-	}
+  function base64_decode_to_byte_array(str) {
+    return Uint8Array.from(atob(str), c => c.charCodeAt(0))
+  }
 
-	function base64url_decode_to_byte_array(str) {
-		return base64_decode_to_byte_array( base64url_decode(str) );
-	}
+  function base64url_decode_to_byte_array(str) {
+    return base64_decode_to_byte_array( base64url_decode(str) );
+  }
 
   const _BASE64_PACK_PREFIX="data:;base64,";
   
@@ -96,7 +96,7 @@ WebUtil.Data_Util=(function(){
   }
 
   function byte_array_to_hex( byte_array ){
-		var hex = [];
+    var hex = [];
     for (var i=0; i<byte_array.length; i++){
       hex.push(_pad_hex( byte_array[i].toString(16) ));
     }
@@ -348,7 +348,7 @@ WebUtil.Data_Util=(function(){
       this.offset = 0
     }
 
-    _write_datetime(byte_array, offset, last_modified) {
+    _set_datetime(byte_array, offset, last_modified) {
       var date = new Date(last_modified)
       var dos_time = date.getSeconds() >> 1 | date.getMinutes() << 5 | date.getHours() << 11
       var dos_date = date.getDate() | (date.getMonth() + 1) << 5 | (date.getFullYear() - 1980) << 9
@@ -362,7 +362,7 @@ WebUtil.Data_Util=(function(){
 
       const minimum_version = 0x1400
       header.view.setUint16(0, minimum_version)
-      this._write_datetime(header.view, 6, last_modified)
+      this._set_datetime(header.view, 6, last_modified)
       header.view.setUint32(10, crc, true)
       header.view.setUint32(14, file_size, true)
       header.view.setUint32(18, file_size, true)
