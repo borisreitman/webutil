@@ -149,6 +149,11 @@ If you do not have JQuery loaded, this a helper function that can help you swap 
 Use inside `drop` event handler, and pass the event object to this function.
 Returns a array of File objects dropped.
 
+##### group_files_by_folder( files )
+
+Use this to group file list resulting from multiple directory upload. Pass `event.target.files` to it.
+Returns a list `[ folders_dict, individual_files ]`. The entries inside the folders dictionary are flattened.
+
 ##### format_file_size( size_in_bytes )
 
 Returns user friendly size in appropirate units. If the size is larger than 1024 bytes, it will return it in kilobytes. If it is larger than 1 MB it will return it in megabytes.

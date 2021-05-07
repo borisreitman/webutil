@@ -158,6 +158,29 @@ WebUtil.HTML_Util=(function(){
     return files;
   }
 
+  function Upload_Error(code, message) {
+    const error = new Error(message);
+    error.code = code;
+    return error;
+  }
+
+  function group_files_by_folder(files){
+    var groups = {}, ungrouped = [];
+    for (var file of files){
+      var path = file.webkitRelativePath.split("/");
+      if (path.length > 1){ // folder
+        let folder = path.shift();
+        if (!groups[folder]){
+          groups[folder] = [];
+        }
+        groups[folder].push(file);
+      } else {
+        ungrouped.push(files);
+      }
+    }
+    return [ groups, ungrouped ];
+  }
+
   function format_file_size( bytes ){
     var kb = bytes / 1024;
     var mb = kb / 1024;
@@ -182,6 +205,7 @@ WebUtil.HTML_Util=(function(){
     resize_textarea_to_fit,
     remove_css_classes,
 
+    group_files_by_folder,
     get_dropped_files,
     format_file_size
   };

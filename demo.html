@@ -16,6 +16,9 @@
   <p>Drag one or more files to this Drop Zone ...</p>
 </div>
 
+Directories
+<input type="file" webkitdirectory mozdirectory onchange="directory_handler(event)" >
+
 
 
 <div id="$foo">
@@ -260,6 +263,16 @@
       prepare_download_link(blob, 'foo.zip', $download_zip)
     }
 
+    async function directory_handler(event) {
+      var [folders, individual_files] = WebUtil.HTML_Util.group_files_by_folder(event.target.files);
+      for (file in individual_files){
+        encrypt_file(file);
+      }
+      for (var folder in folders){
+        encrypt_folder(folder, folders[folder])
+      }
+    }
+
     async function file_handler(event) {
       var file = event.target.files[0];
       encrypt_file(file);
@@ -269,28 +282,61 @@
       console.log('File(s) dropped');
       var files = [];
 
+      window.tmp2 = event.dataTransfer;
+
       // Prevent default behavior (Prevent file from being opened)
       ev.preventDefault();
 
       const { get_dropped_files } = WebUtil.HTML_Util;
-      var files = get_dropped_files(ev);
+      //var files = get_dropped_files(ev);
+      var files = await get_dropped_files(ev);
+      console.log("Got files:", files);
       var file = files[0];
-      encrypt_file(file);
+      //encrypt_file(file);
     }
 
     async function encrypt_file(file) {
       const { read_file_as_byte_array } = WebUtil.Data_Util;
-      
       const { create_blob_from_byte_array } = WebUtil.Data_Util;
 
       var byte_array = await read_file_as_byte_array( file );
       var blob = await create_blob_from_byte_array( byte_array );
+
+      //TODO: encrypt blob here
       
       const { prepare_download_link } = WebUtil.HTML_Util;
       var link = document.createElement('a');
       link.innerText = 'download ' + file.name;
       document.body.appendChild(link);
       prepare_download_link(blob, file.name, link)
+    }
+
+    async function encrypt_folder(name, list){
+      console.log("encrypt_folder:", name, list);
+
+      const { read_file_as_byte_array, string_to_byte_array, Memory_Zip } = WebUtil.Data_Util;
+      const { create_blob_from_byte_array, pack_named_byte_arrays } = WebUtil.Data_Util;
+
+      var items = [];
+      var zipper = new Memory_Zip();
+      for (var file of list){
+        var path = file.webkitRelativePath;
+        console.log("path: ", path, file);
+        var byte_array = await read_file_as_byte_array( file );
+        zipper.add( path, byte_array, new Date(file.lastModified) )
+      }
+      var packed = zipper.get_zipped();
+      console.log("packed: ", packed);
+
+      // TODO: encrypt packed byte array here
+
+      var blob = await create_blob_from_byte_array( packed );
+
+      const { prepare_download_link } = WebUtil.HTML_Util;
+      var link = document.createElement('a');
+      link.innerText = `download ${name}.zip`
+      document.body.appendChild(link);
+      prepare_download_link(blob, name+".zip", link)
     }
 
     function dragover_handler(ev) {
