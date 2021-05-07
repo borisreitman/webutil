@@ -391,6 +391,10 @@ Use this class to create a ZIP file from files represented as byte arrays. There
   var byte_array = zipper.get_zipped()
 ```
 
+##### zip_files()
+
+Wrapper on above class. Receives a list of File objects, and returns a Promise of a 
+byte array of the zip.
 
 ##### read_file_as_byte_array( file )
 

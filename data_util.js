@@ -438,6 +438,15 @@ WebUtil.Data_Util=(function(){
     }
   }
 
+  async function zip_files( files ){
+    var zipper = new Memory_Zip();
+    for (var file of files){
+      let byte_array = await read_file_as_byte_array(file)
+      zipper.add( file.webkitRelativePath, byte_array, file.lastModified )
+    }
+    return zipper.get_zipped();
+  }
+
   return {
     base64url_encode,
     base64url_decode,
@@ -476,6 +485,7 @@ WebUtil.Data_Util=(function(){
     unpack_named_byte_arrays,
 
     Crc32,
-    Memory_Zip
+    Memory_Zip,
+    zip_files
   };
 })();
