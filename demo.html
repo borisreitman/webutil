@@ -24,6 +24,8 @@
 
 <a id="$download">download test</a>
 
+<a id="$download_zip">download zip test</a>
+
 
 <script>
     var _test_blob;
@@ -247,6 +249,15 @@
 
       var list = unpack_named_byte_arrays( packed );
       console.log("unpacked list", list);
+
+      const { Memory_Zip } = WebUtil.Data_Util;
+      var zipper = new Memory_Zip();
+      zipper.add( "foo/bar.txt", string_to_byte_array("hello") )
+      zipper.add( "foo/baz.txt", string_to_byte_array("world") )
+      var zipped = zipper.get_zipped();
+
+      var blob = create_blob_from_byte_array(zipped);
+      prepare_download_link(blob, 'foo.zip', $download_zip)
     }
 
     async function file_handler(event) {

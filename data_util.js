@@ -302,6 +302,139 @@ WebUtil.Data_Util=(function(){
     return result;
   }
 
+  class Crc32 {
+    constructor () {
+      this.crc = -1
+    }
+
+    append (data) {
+      var crc = this.crc | 0; var table = this.table
+      for (var offset = 0, len = data.length | 0; offset < len; offset++) {
+        crc = (crc >>> 8) ^ table[(crc ^ data[offset]) & 0xFF]
+      }
+      this.crc = crc
+    }
+
+    get () {
+      return ~this.crc
+    }
+  }
+
+  Crc32.prototype.table = (() => {
+    var i; var j; var t; var table = []
+    for (i = 0; i < 256; i++) {
+      t = i
+      for (j = 0; j < 8; j++) {
+        t = (t & 1) ? (t >>> 1) ^ 0xEDB88320 : t >>> 1
+      }
+      table[i] = t
+    }
+    return table
+  })()
+
+  function create_view_buffer( byte_length ) {
+    var array = new Uint8Array(byte_length)
+    var view = new DataView(array.buffer)
+    return { array, view }
+  }
+
+  class Memory_Zip {
+    // Derived from:
+    //   https://github.com/Touffy/client-zip/blob/master/src/zip.ts
+    //   https://jimmywarting.github.io/StreamSaver.js/examples/zip-stream.js
+
+    constructor(){
+      this.files = []
+      this.offset = 0
+    }
+
+    _write_datetime(byte_array, offset, date) {
+      var dos_time = date.getSeconds() >> 1 | date.getMinutes() << 5 | date.getHours() << 11
+      var dos_date = date.getDate() | (date.getMonth() + 1) << 5 | (date.getFullYear() - 1980) << 9
+      byte_array.setUint16(offset, dos_time, true)
+      byte_array.setUint16(offset + 2, dos_date, true)
+    }
+
+    _create_file_header(name, crc, file_size, last_modified) {
+      var header = create_view_buffer(26)
+      var data = create_view_buffer(30 + name.length)
+
+      const minimum_version = 0x1400
+      header.view.setUint16(0, minimum_version)
+      this._write_datetime(header.view, 6, last_modified)
+      header.view.setUint32(10, crc, true)
+      header.view.setUint32(14, file_size, true)
+      header.view.setUint32(18, file_size, true)
+      header.view.setUint16(22, name.length, true)
+
+      const file_header_signature = 0x504b0304
+      data.view.setUint32(0, file_header_signature)
+      data.array.set(header.array, 4)
+      data.array.set(name, 30)
+
+      return [header.array, data.array]
+    }
+
+    _create_central_record(){
+      var length = this.files.reduce((a, f) => a + 46 + f.name.length + f.comment.length, 0);
+      var data = create_view_buffer(length + 22)
+      const minimum_version = 0x1400
+
+      var offset = 0;
+      for (var file of this.files){
+        data.view.setUint32(offset, 0x504b0102)
+        data.view.setUint16(offset + 4, minimum_version)
+        data.array.set(file.header, offset + 6)
+        data.view.setUint16(offset + 32, file.comment.length, true)
+        if (file.directory) {
+          data.view.setUint8(offset + 38, 0x10)
+        }
+        data.view.setUint32(offset + 42, file.offset, true)
+        data.array.set(file.name, offset + 46)
+        data.array.set(file.comment, offset + 46 + file.name.length)
+        offset += 46 + file.name.length + file.comment.length
+      }
+
+      data.view.setUint32(offset, 0x504b0506)
+      data.view.setUint16(offset +  8, this.files.length, true)
+      data.view.setUint16(offset + 10, this.files.length, true)
+      data.view.setUint32(offset + 12, length, true)
+      data.view.setUint32(offset + 16, this.offset, true)
+
+      return data.array
+    }
+
+    add(name, byte_array, last_modified = null){ // construct date from file.lastModified
+      if (!last_modified){
+        last_modified = new Date();
+      }
+
+      this.result = null;
+
+      var crc = new Crc32();
+      crc.append(byte_array)
+
+      name = string_to_byte_array( name )
+      var comment = new Uint8Array([])
+      var [header, full_header] = this._create_file_header(name, crc.get(), byte_array.length, last_modified)
+      var result = concatenate_byte_arrays( full_header, byte_array )
+      this.files.push({ name, comment, directory: false, header, result, offset: this.offset});
+      this.offset += result.length;
+    }
+
+    get_zipped(){
+      if (this.result){
+        return this.result;
+      }
+
+      var parts = this.files.map( x => x.result );
+      var central_record = this._create_central_record();
+
+      this.result = concatenate_byte_arrays( ...parts, central_record );
+      return this.result;
+    }
+  }
+
   return {
     base64url_encode,
     base64url_decode,
@@ -337,6 +470,8 @@ WebUtil.Data_Util=(function(){
     auto_pack_byte_arrays,
     auto_unpack_byte_arrays,
     pack_named_byte_arrays,
-    unpack_named_byte_arrays
+    unpack_named_byte_arrays,
+
+    Memory_Zip
   };
 })();

@@ -362,6 +362,18 @@ single byte array.
 
 The opposite operation to above. Returns the same kind of list.
 
+##### class Memory_Zip
+
+Use this class to create a ZIP file from files represented as byte arrays. There is no compression, and Zip64 is not supported, so there is a 4GB size limit.  Example:
+
+```
+  var zipper = new Memory_Zip()
+  zipper.add( "foo/bar.txt", string_to_byte_array("hello" ), new Date())
+  zipper.add( "foo/baz.txt", string_to_byte_array("world!"), new Date())
+  ...
+  var byte_array = zipper.get_zipped()
+```
+
 
 ##### read_file_as_byte_array( file )
 
